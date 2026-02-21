@@ -43,7 +43,7 @@ export function Header() {
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
             <Button
-              href="https://projects.ultimateqa.com"
+              href="https://ultimateqaportfolio.vercel.app/"
               external
               variant="primary"
               size="sm"
@@ -118,7 +118,7 @@ export function Header() {
             })}
             <div className="pt-3 border-t border-uqa-gray-light">
               <Button
-                href="https://projects.ultimateqa.com"
+                href="https://ultimateqaportfolio.vercel.app/"
                 external
                 variant="primary"
                 size="sm"

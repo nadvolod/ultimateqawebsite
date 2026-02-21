@@ -38,7 +38,7 @@ export function Hero() {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
-              href="https://projects.ultimateqa.com"
+              href="https://ultimateqaportfolio.vercel.app/"
               external
               variant="primary"
               size="lg"
@@ -50,7 +50,7 @@ export function Hero() {
               </svg>
             </Button>
             <Button
-              href="https://ck.page/profile"
+              href="https://ultimateqa.ck.page/profile"
               external
               variant="outline"
               size="lg"

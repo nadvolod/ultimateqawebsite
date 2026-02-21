@@ -21,7 +21,7 @@ const PILLAR_A = {
     'Design-to-code fidelity',
     'E-commerce and booking systems',
   ],
-  cta: { label: 'View Web Projects', href: 'https://projects.ultimateqa.com' },
+  cta: { label: 'View Web Projects', href: 'https://ultimateqaportfolio.vercel.app/' },
 }
 
 const PILLAR_B = {
@@ -40,7 +40,7 @@ const PILLAR_B = {
     'OpenAI/Anthropic integrations',
     'Production-grade reliability + guardrails',
   ],
-  cta: { label: 'View AI Projects', href: 'https://projects.ultimateqa.com' },
+  cta: { label: 'View AI Projects', href: 'https://ultimateqaportfolio.vercel.app/' },
 }
 
 function Pillar({ data, accent }: { data: typeof PILLAR_A; accent: 'blue' | 'purple' }) {

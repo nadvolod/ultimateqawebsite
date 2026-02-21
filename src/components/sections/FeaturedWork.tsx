@@ -18,7 +18,7 @@ export function FeaturedWork() {
               dark
             />
             <Link
-              href="https://projects.ultimateqa.com"
+              href="https://ultimateqaportfolio.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex-shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold text-uqa-sky hover:text-white transition-colors duration-200"

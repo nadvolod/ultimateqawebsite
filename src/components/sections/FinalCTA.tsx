@@ -28,7 +28,7 @@ export function FinalCTA() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
-              href="https://projects.ultimateqa.com"
+              href="https://ultimateqaportfolio.vercel.app/"
               external
               variant="secondary"
               size="lg"
@@ -40,7 +40,7 @@ export function FinalCTA() {
               </svg>
             </Button>
             <Button
-              href="https://ck.page/profile"
+              href="https://ultimateqa.ck.page/profile"
               external
               variant="outline"
               size="lg"

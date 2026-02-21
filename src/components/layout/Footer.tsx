@@ -1,12 +1,12 @@
 import Link from 'next/link'
 
 const FOOTER_LINKS = [
-  { label: 'Projects', href: 'https://projects.ultimateqa.com', external: true },
-  { label: 'Case Studies', href: 'https://ultimateqa.com/case-studies/', external: true },
-  { label: 'Blog', href: 'https://ultimateqa.com/blog/', external: true },
-  { label: 'Newsletter', href: 'https://ck.page/profile', external: true },
-  { label: 'Free Courses', href: 'https://ultimateqa.com/free-courses/', external: true },
-  { label: 'Automation Exercises', href: 'https://ultimateqa.com/automation-exercises/', external: true },
+  { label: 'Projects',             href: 'https://ultimateqaportfolio.vercel.app/',             external: true },
+  { label: 'Case Studies',         href: 'https://ultimateqa.com/case-studies/',                 external: true },
+  { label: 'Blog',                 href: 'https://ultimateqa.com/blog/',                         external: true },
+  { label: 'Newsletter',           href: 'https://ultimateqa.ck.page/profile',                   external: true },
+  { label: 'Free Courses',         href: 'https://courses.ultimateqa.com/collections',           external: true },
+  { label: 'Automation Exercises', href: 'https://ultimateqa.com/automation/',                   external: true },
 ]
 
 export function Footer() {

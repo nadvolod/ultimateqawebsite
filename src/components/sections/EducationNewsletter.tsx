@@ -6,37 +6,37 @@ import Link from 'next/link'
 const EDUCATION_LINKS = [
   {
     label: 'Free Courses',
-    href: 'https://ultimateqa.com/free-courses/',
+    href: 'https://courses.ultimateqa.com/collections',
     description: 'Start your automation journey with zero cost.',
     icon: '🎓',
   },
   {
     label: 'Selenium Java',
-    href: 'https://ultimateqa.com/selenium-java/',
+    href: 'https://courses.ultimateqa.com/courses/selenium-java-bootcamp',
     description: 'Complete Selenium WebDriver course in Java.',
     icon: '☕',
   },
   {
     label: 'Video Courses (Udemy)',
-    href: 'https://ultimateqa.com/udemy/',
+    href: 'https://www.udemy.com/user/nikolay/?kw=nikolay+advolodkin',
     description: 'Best-selling automation courses on Udemy.',
     icon: '▶️',
   },
   {
     label: 'Selenium C#',
-    href: 'https://ultimateqa.com/selenium-c-sharp/',
+    href: 'https://courses.ultimateqa.com/courses/selenium-with-c',
     description: 'Selenium WebDriver for .NET developers.',
     icon: '#️⃣',
   },
   {
     label: 'Automation Exercises',
-    href: 'https://ultimateqa.com/automation-exercises/',
+    href: 'https://ultimateqa.com/automation/',
     description: 'Practice automation on purpose-built test sites.',
     icon: '🔬',
   },
   {
     label: 'Selenium Resources',
-    href: 'https://ultimateqa.com/selenium-resources/',
+    href: 'https://ultimateqa.com/best-selenium-webdriver-resources/',
     description: 'Curated library of Selenium learning resources.',
     icon: '📚',
   },
@@ -117,7 +117,7 @@ export function EducationNewsletter() {
 
               <div className="mt-6">
                 <Button
-                  href="https://ck.page/profile"
+                  href="https://ultimateqa.ck.page/profile"
                   external
                   variant="primary"
                   size="md"
