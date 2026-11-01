@@ -1,0 +1,2232 @@
+---
+title: "Top 17 Automated Testing Best Practices (Supported By Data)"
+description: "Automation patterns and anti-patterns are the cornerstones of any test automation strategy. It doesn't matter which tool you use. You must follow this list."
+seoTitle: "Top 17 Automated Testing Best Practices (Supported By Data)"
+date: "2023-06-06T14:41:34Z"
+modified: "2024-03-19T00:08:07Z"
+topic: "test-automation"
+image: "/blog/automation-patterns-antipatterns/00-4.png"
+legacyId: 5903
+legacyCategories: ["automation-best-practices","test-automation"]
+---
+
+In the fast-paced world of software development, ensuring high-quality products is crucial for success. Automated testing has emerged as a powerful ally, enabling organizations to accelerate their testing processes, improve efficiency, and deliver robust software solutions to market. However, implementing effective automated testing requires more than just the right tools and frameworks—it demands a well-defined set of best practices. In this article, we delve into the top 17 automated testing best practices, presenting a comprehensive guide that will empower developers, testers, and quality assurance teams to optimize their testing efforts and achieve unparalleled software quality. Whether you’re a seasoned professional or a novice in the realm of automation, these best practices will serve as invaluable resources to supercharge your testing process, bolster product reliability, and meet the ever-evolving demands of the software industry.
+
+**Using a combination of these patterns customers have:**
+
+[✅](https://emojikeyboard.org/copy/White_Heavy_Check_Mark_Emoji_%E2%9C%85?utm_source=extlink) [Reduced test execution time by 66%](https://devops.com/4-steps-to-achieve-a-66-reduction-in-test-run-time/) (Check out [Atomic Automated Tests](/automation-patterns-antipatterns/#Best_Practice_Tests_Should_Be_Atomic) and [Parallelization](/automation-patterns-antipatterns/#Tests_Should_Run_In_Parallel))
+
+[✅](https://emojikeyboard.org/copy/White_Heavy_Check_Mark_Emoji_%E2%9C%85?utm_source=extlink) [Improved test run time by 34%](https://saucelabs.com/blog/1-simple-trick-to-massively-improve-automation-efficiency) by optimizing only 2 element commands!
+
+[✅](https://emojikeyboard.org/copy/White_Heavy_Check_Mark_Emoji_%E2%9C%85?utm_source=extlink) [Made a test 560% faster](https://saucelabs.com/blog/how-to-optimize-a-test-and-make-it-560-percent-faster)
+
+**Even better:**
+
+Another Selenium design pattern helped this client **execute 30,000 tests a week with a 96% pass rate:**
+
+<Figure src="/blog/automation-patterns-antipatterns/02-96-pass-rate.png" width="2560" height="849" alt="" caption="This is what quality automation looks like!" />
+
+**Here’s another one:**
+
+In about four hours a customer was able to take a very simple test, detach it from their complicated framework, and 
+
+✅ decrease the test case execution time by 60%, 
+
+✅ decrease the number of unnecessary Selenium commands by 87% (from >160 calls to 21 😁),
+
+✅ increase test reliability to 100%
+
+There are many more automated testing best practices like this. Keep reading…
+
+**About the author:**
+
+You might be asking, “What gives me the credibility to recommend automated testing best practices”?
+
+First, I do it out of the desire to help the community learn from my mistakes and my own experiences. I have no funding or affiliations with any agency that would pay me to argue in one direction or another.
+
+Second, as of the end of 2019, I work as part of a team of Solution Architects. There are about 8 of us and we have close to **100 years of combined test automation experience!**
+
+Most of these automated testing best practices we have been following for years, as we learned them independently from other luminaries. And we agree on most ideas here, especially the automated testing best practices to avoid.
+
+**There’s more:**
+
+Finally, if that’s not enough, as a Solutions Architect, I work with about a dozen clients every single year. And probably a hundred different automation engineers. Through every interaction, I see what works and what doesn’t. I mean we run over 3 Million tests per day! We have the data!
+
+That’s when I come to this post and document it for you. So that you **avoid the automated testing worst practices** and **follow the automated testing best practices.** 
+
+So enjoy and take this seriously, this ain’t no bs 😎
+
+<a id="automated-testing-best-practices" />
+
+## Automated Testing Best Practices
+
+<a id="atomic" />
+
+### Best Practice: Tests Should Be Atomic
+
+<Figure src="/blog/automation-patterns-antipatterns/04-post-images-3.jpg" width="1920" height="1080" alt="one of the automated testing patterns is that testing should be atomic" />
+
+<a id="what-is-an-atomic-automated-test" />
+
+#### **What is an atomic automated test?**
+
+An automated atomic test (AAT) is one that tests only a single feature or component. AAT have very few UI interactions and typically touch a maximum of two screens. The “typical” UI end-to-end tests break the AAT pattern.
+
+Furthermore, AATs meet several requirements of [good tests as specified by Kent Beck](https://github.com/nadvolod/testing-best-practices/blob/main/README.md#what-is-a-good-test-1)
+
+✅ Isolated
+
+✅ Composable
+
+✅ Fast
+
+As an aside, this concept is already well understood in unit and integration tests, but UI tests continue to lag behind.
+
+A good rule of thumb that I use on my teams is:
+
+> Automated acceptance test **should not** run longer than **30 sec** on your local resources
+
+Here are some examples of atomic GUI tests:
+
+```csharp title="atomicTest.cs"
+[Test]
+public void ShouldBeAbleToCheckOutWithItems()
+{
+    //Arrange
+    var overviewPage = new CheckoutOverviewPage(Driver);
+    overviewPage.Open();
+    //We don't need to actually use th UI to add items to the cart. 
+    //I'm injecting Javascript to control the state of the cart
+    overviewPage.Cart.SetCartState();
+    //Act - very few UI interactions
+    overviewPage.FinishCheckout().
+        IsCheckoutComplete.Should().BeTrue("we finished the checkout process"); //Assert
+}
+```
+
+```csharp title="GoodTest.cs"
+[Test]
+public void ShouldNotBeAbleToLoginWithLockedOutUser()
+{
+    _loginPage.Open();
+    //Although I would likely never test a login through the UI. This is just a small example
+    var productsPage = _loginPage.Login("locked_out_user", "secret_sauce");
+    productsPage.IsLoaded.Should().BeFalse("we used a locked out user who should not be able to login.");
+}
+```
+
+<a id="500-reduction-in-test-suite-execution-time-case-study" />
+
+#### 500% Reduction in Test Suite Execution Time (Case Study)
+
+In a recent case study, we found that 18 long end to end tests ran in **~20 min**. Using a much larger suite of 180 **atomic** tests, with the same exact code coverage, running in parallel, we were able to decrease the entire suite execution time to **~4min**.
+
+<Figure src="/blog/automation-patterns-antipatterns/06-2019-02-08-0937.png" width="508" height="542" alt="atomic vs non-atomic tests" />
+
+<a id="advantages-of-atomic-tests" />
+
+#### Advantages of atomic tests
+
+**1\. Atomic tests fail fast**
+
+First, writing atomic tests allows you to fail fast and fail early. This implies that you will get extremely fast and focused feedback. If you want to check the state of a feature, it will take you no longer than 1 minute.
+
+**2\. Atomic tests decrease flaky behavior**
+
+> Tests that complete in 2 minutes or less are **twice as likely to pass** as tests lasting longer than two minutes. In other words, **the longer a test takes to run, the more likely it is to fail**
+> 
+> [https://info.saucelabs.com/sauce-labs-continuous-testing-benchmark-report-M.html](https://info.saucelabs.com/sauce-labs-continuous-testing-benchmark-report-M.html)
+
+Second, writing atomic tests reduces flakiness because it decreases the number of possible breaking points in that test. Flakiness is less of a problem with unit or integration tests. But it is a large problem with acceptance UI automation.
+
+Here’s an example:
+
+1.  Open UltimateQA.com home page
+2.  Assert that the page opened
+3.  Assert that each section on the page exists
+4.  Open Blog page
+5.  Search for an article
+6.  Assert that the article exists
+
+For UI automation, **every single step is a chance for something to go wrong…**
+
+A locator may have changed, the interaction mechanism may have changed, your synchronization strategy may be broken, and so on.
+
+Therefore, the more steps that you add, the more likely your test is to break and convey false positives.
+
+**3\. Atomic checks allow for better testing**
+
+The third benefit of writing atomic tests is that if it fails, it will not block other functionality from being tested. For example, the test I mentioned above. If it fails on Step 3, then you might never get to check if the Blog page works or that the Search functionality works. Assuming that you don’t have other tests to check this functionality. As a result of a large test, you will reduce your test coverage.
+
+**4\. Atomic tests are short and fast**
+
+Finally, another great benefit of writing atomic tests is that they will run quicker when parallelized…
+
+**How I got a 98% performance enhancement in test execution speed with a single change?**
+
+<Figure src="/blog/automation-patterns-antipatterns/08-2019-02-13-1559.png" width="2098" height="680" alt="automated testing best practices atomic tests" caption="98% improvement in average test case execution time by having atomic, parallel tests" />
+
+In the scenario above, I had a suite of 18 end-to-end tests that were NOT atomic and were not running in parallel.
+
+Maintaining the same code coverage, I broke down my tests into 180 tiny, atomic tests…
+
+Ran them in parallel and decreased the average time of test case to 1.76s from 86s!
+
+> Your entire automation suite run time will be as fast as your slowest test
+> 
+> Nikolay Advolodkin
+
+By the way, I have seen automated tests that take 30 – 90 minutes to execute. These tests are extremely annoying to run because they take so long. Even worse, I’ve never seen such a test produce valuable feedback in my entire career. Only false positives.
+
+> Are you having errors in your Selenium automation code? Maybe [this post of the Most Common Selenium Errors can help you](/common-selenium-webdriver-errors-fix/).
+
+* * *
+
+## Find out how our clients are running automation 66% faster!   Get your Free framework assessment.
+
+[**See if you qualify**](https://forms.clickup.com/2314027/f/26ktb-6387/56LKNUZ9BDYXSC73SY)
+
+ℹ️ We have limited space for only 1 assessment per quarter
+
+* * *
+
+<a id="case-study-of-amazing-automation" />
+
+#### Case Study of Amazing Automation:
+
+<Figure src="/blog/automation-patterns-antipatterns/10-96-pass-rate-1080x358.png" width="1080" height="358" alt="automated testing best practices example" />
+
+**Break down:**
+
+[✅](https://emojipedia.org/white-heavy-check-mark/)30,000 tests/week
+
+[✅](https://emojipedia.org/white-heavy-check-mark/)**96%** pass rate
+
+[✅](https://emojipedia.org/white-heavy-check-mark/)Average test run time: **30 sec** (In the cloud!)
+
+[✅](https://emojipedia.org/white-heavy-check-mark/)The average number of Selenium commands per test: **&lt;30**
+
+Ummm, yea. That’s what atomic tests will do [🔥🔥](https://emojipedia.org/fire/)[👏👏](https://emojipedia.org/clapping-hands-sign/)
+
+By The Way, Atomic tests are covered in depth in the article below 👇👇
+
+[https://ultimateqa.staging.wpmudev.host/automated-atomic-tests/embed/#?secret=xodcHjzq4e#?secret=OKBFnpeVX9](https://ultimateqa.staging.wpmudev.host/automated-atomic-tests/embed/#?secret=xodcHjzq4e#?secret=OKBFnpeVX9)
+
+<a id="break-up-tests" />
+
+#### How to break up giant end-to-end UI tests?
+
+Okay, you, believe me, atomic tests are good.
+
+**But how can you break up your large end-to-end tests, right?**
+
+Trust me, you’re not the only one struggling with this situation…
+
+**It gets worse:**
+
+Daily, I encounter clients that have the same issue.
+
+Furthermore, I wish that I could provide a simple answer to this. But I cannot…
+
+For most individuals, this challenge is one of technology and culture.
+
+However, I will provide a step by step guide to help you have atomic tests.
+
+It won’t be easy… But when you achieve it, it will be SO Sweet!
+
+Here is a simple scenario:
+
+1.  Open Amazon.com
+2.  Assert that the page opens
+3.  Search for an item
+4.  Assert that item is found
+5.  Add item to cart
+6.  Assert that item is added
+7.  Checkout
+8.  Assert that checkout is complete
+
+The first problem is that many automation engineers assume that you must do an entire end-to-end flow for this automated test.
+
+You must complete step 1 before step 2 and so on… Because how can you get to the checkout process without having an item in the cart?
+
+The automated testing best practices approach is to be able to inject data to populate the state of the application before any UI interactions.
+
+**Side Note:**
+
+If you would like to see a live code demonstration, I tackle that in this video at ~12:35 (click Play)
+
+<YouTube id="Q_9ULJNTGTY" start="752" />
+
+<a id="data-manipulation" />
+
+#### How to manipulate test data for UI automation?
+
+You can inject data via several options:
+
+1.  Using something like a RESTful API to set the application into a specific state
+2.  Using JavaScript
+3.  Injecting data into the DB to set the application in a certain state
+4.  Using cookies
+
+If you can inject data between the seams of the application, then you can isolate each step and test it on its own
+
+**Some Options:**
+
+1.  Use an API to send a web request that will generate a user
+2.  Use an API that will generate an item in your Amazon cart
+3.  Now you can pull up the UI to the cart page and checkout using web automation
+4.  Clean up all test data after
+
+This is the best practice approach. You tested the checkout process without using the UI for steps one through three.
+
+Using an API is extremely fast… A web request can execute in like 100 ms.
+
+This means that **steps 1,2,4 can take less than one second to execute**. The only other step you will need to do is to finish the checkout process.
+
+**It gets better:**
+
+Using an API is much more robust than using a UI for test steps. As a result, you will drastically decrease test flakiness in your UI automation.
+
+<a id="how-to-control-app-state-using-javascript" />
+
+#### How To Control App State Using JavaScript?
+
+Probably the most common impediment to atomic testing is the login screen. And most of our apps have one.
+
+So how do we remove this from our test so that our test can be atomic?
+
+**Here’s one example:**
+
+<Figure src="/blog/automation-patterns-antipatterns/12-Screenshot-at-May-12-14-17-14.png" width="1208" height="644" alt="" caption="Page with a login screen" />
+
+1\. We execute some JavaScript with our automation framework like this:
+
+```csharp
+((IJavaScriptExecutor)_driver).ExecuteScript("window.sessionStorage.setItem('session-username', 'standard-user')");
+_driver.Navigate().Refresh();
+```
+
+Congratulations, we are now logged in 🙂
+
+Now use your UI testing tool to perform the single operation that you want to test.
+
+Here’s how a full atomic test would look like:
+
+```csharp
+[Test]
+public void ShouldBeAbleToCheckOutWithItems()
+{
+    //Arrange
+    var overviewPage = new CheckoutOverviewPage(Driver);
+    overviewPage.Open();
+    //We don't need to actually use th UI to add items to the cart. 
+    //I'm injecting Javascript to control the state of the cart
+    overviewPage.Cart.SetCartState();
+    //Act - very few UI interactions
+    overviewPage.FinishCheckout().
+        IsCheckoutComplete.Should().BeTrue("we finished the checkout process"); //Assert
+}
+```
+
+Notice how the test only has **one UI action and one assertion**…
+
+That’s a sign of an atomic test in UI automation.
+
+**Here’s a tutorial that shows you how to create an atomic test by controlling the state of the UI using JS.**
+
+https://www.youtube.com/embed/wOnjvh7EB8s?feature=oembedHow to bypass a login mechanism using JavaScript injection
+
+<a id="how-to-coordinate-api-and-ui-interactions-in-one-test" />
+
+#### How To Coordinate API and UI Interactions In One Test?
+
+What if you wanted to coordinate API and UI actions in a single test? Well, that would look something like this.
+
+```csharp
+public void AtomicTest()
+{
+  //This is an API call that will create a new user
+  //Known as the Arrange in unit testing
+  var api = new AppApi();
+  var testData = api.CreateNewUser();
+
+  //Now we perform our UI interactions
+  //The Act in unit testing
+  var loginPage = new LoginPage(driver);
+  loginPage.Login(testData);
+  
+  //Now the assertion, the Act
+  new ProductsPage(driver).IsLoaded().Should().BeTrue();
+  
+  //Now clean up, which can also be done in a TearDown hook
+  api.DeleteUser(testData.UserId);
+}
+```
+
+The most common situation is not to alternate Selenium and API calls. Normally we do API stuff to set up state. UI stuff to assert functionality. API stuff to clean up. It’s not common to do Selenium, API, Selenium, API, Selenium and so on.
+
+However, it’s possible for a user case for sure!
+
+Just remember that Selenium or any other UI framework has nothing to do with your App API. A UI automation library is all about the front-end, the UI. The API part of your test is all about managing state and test data, the back end.
+
+<a id="what-if-you-can-t-inject-data-for-testing" />
+
+#### What if you can’t inject data for testing?
+
+I know that the world isn’t perfect and many of us aren’t lucky enough to have applications that are developed with testability in mind.
+
+So what can you do?
+
+**You have two options:**
+
+<a id="1-work-with-developers-to-make-the-application-more-testable" />
+
+##### 1\. Work with Developers to make the application more testable
+
+Yes, you should work with the developers to make your application more testable. Not being able to easily test your application is a sign of poor development practices.
+
+This does mean that you will need to leave your cube and communicate across silos to break down communication barriers.
+
+Frankly, this is part of your job. You need to communicate across teams and work together to create a stable product.
+
+> If the product fails, the whole team fails, not just a specific group
+
+Again, it’s not easy…
+
+I’ve worked at one company where it took me two years to simply integrate Developers, automation, and manual QA into a single CI pipeline.
+
+It was a weekly grind to have everyone caring about the outcome of the automation suite.
+
+And in the end, our team was stronger and more agile than ever.
+
+Trust me, this is doable and most developers are happy to help. But you must be willing to break down these barriers.
+
+**Here’s the second option, and you won’t want to hear it:**
+
+<a id="2-if-your-application-is-not-automation-friendly-don-t-automate" />
+
+##### 2\. If your application is not automation-friendly, don’t automate
+
+If you can’t work with the developers because you’re unwilling…
+
+Or if the company culture doesn’t allow you to…
+
+Then just don’t automate something that won’t provide value. I know that your manager asked you to automate it…
+
+However, we are the automation engineers. **We are the professionals**.
+
+We must decide what to automate and not to automate based on our understanding of application requirements.
+
+We were hired because of our technical expertise, because of our abilities to say what is possible, what is not possible, and what will help the project to succeed.
+
+Although it might feel easy to say “yes, I will automate your 30-minute scenario”, it’s not right to do so.
+
+> If your manager is non-technical, they should not be telling you how to do your job. You don’t see managers telling developers how to code. Why is it okay for managers to tell an automation engineer what to automate?
+
+The answer is it’s not okay!
+
+**You must be the expert and decide on the correct approach to do your job.**
+
+If you don’t agree with me…
+
+Check out this video from Robert Martin – arguably one of the best Software Developers of this century.
+
+<YouTube id="Tng6Fox8EfI" />
+
+He does a better job explaining professionalism than I ever could 🙂
+
+* * *
+
+<a id="tests-should-run-in-parallel" />
+
+### Tests Should Run In Parallel
+
+Parallelization is one of the most powerful ways to speed up test suite execution time. I helped one of my clients go from a suite that runs in 41 min to one that runs in 7 min. We did this by working for less than one hour and enabling parallelization.
+
+Other than deleting tests from the suite, there’s nothing else that can achieve such dramatic results so quickly.
+
+However, parallelization is not so easy to achieve and has four mandatory requirements.
+
+<a id="1-your-tests-cannot-use-the-static-keyword" />
+
+#### 1\. Your tests cannot use the static keyword
+
+It’s actually a bit more complex than simply not using static. If you have objects that are static and that store state, then you will not be able to run in parallel. This is more technically correct. However, thread-safety is hard and it’s better to simply avoid this keyword with anything mutable.
+
+I worked with a client that wanted to speed up their test suite execution time by running in parallel. After looking at their suite, they used a static WebDriver. This means that their tests cannot run in parallel without heavy refactoring.
+
+<a id="2-tests-must-be-autonomous" />
+
+#### 2\. Tests must be autonomous
+
+Don’t link your tests together. There is no good reason for it. If you want to speed up your test suite execution time then parallelize, quarantine, break up giant tests.
+
+<a id="3-just-in-time-data-management" />
+
+#### 3\. Just-in time data management
+
+Test data management is critical to parallelization. The optimal solution is to be able to create your test data, use it in your test case, and then destroy it afterwards. In this way, there are no dependencies or states of objects that can be changed when running in parallel.
+
+* * *
+
+<a id="po" />
+
+### Best Practice: Follow Page Object Pattern
+
+Probably one of the most important automated testing best practices is to follow the Page Object Pattern. I’m sure you heard this one before.
+
+However, I would say at least 80% of people doing test automation still don’t follow the pattern as defined. The pattern that’s existed for over a decade.
+
+In my point of view, that’s a mistake. This is a tried and true pattern that works when followed.
+
+Our team of SAs all follow this pattern and have not had to deviate away from it for any reason. It’s easy and it works. No reason to complicate anything or reinvent the wheel.
+
+<a id="a-good-page-object-pattern" />
+
+#### A Good Page Object Pattern:
+
+1.  The page object class has a great name that tells us exactly what the HTML page or HTML component does
+2.  The page class contains methods to interact with the HTML page or component
+3.  Properties and methods live in a single class
+4.  The page object exposes only methods that an end-user would use to interact with the HTML
+5.  A page object doesn’t need to be an entire HTML page, it can be a small component as well
+
+<a id="examples-of-good-page-objects" />
+
+#### Examples of good page objects
+
+```java
+class CheckoutPersonalInfo extends Base {
+    constructor() {
+        super(SCREEN_SELECTOR);
+    }
+
+    // Make it private so people can't mess with it
+    // Source: https://github.com/tc39/proposal-class-fields#private-fields
+    get #screen() {
+        return $(SCREEN_SELECTOR);
+    }
+
+    get #cancelButton() {
+        return $('.cart_cancel_link');
+    }
+
+    /**
+     * Submit personal info
+     *
+     * @param {object} personalInfo
+     * @param {string} personalInfo.firstName
+     * @param {string} personalInfo.lastName
+     * @param {string} personalInfo.zip
+     */
+    submitPersonalInfo(personalInfo) {
+        const {firstName, lastName, zip} = personalInfo;
+
+        this.waitForIsDisplayed();
+        this.#firstName.addValue(firstName);
+        triggerOnChange('[data-test="firstName"]');
+        this.#lastName.addValue(lastName);
+        triggerOnChange('[data-test="lastName"]');
+        this.#postalCode.addValue(zip);
+        triggerOnChange('[data-test="postalCode"]');
+        this.#continueCheckoutButton.click();
+    }
+}
+```
+
+```csharp
+public class ProductsPage : BasePage
+{
+    private readonly string _pageUrlPart;
+
+    public ProductsPage(IWebDriver driver) : base(driver)
+    {
+        _pageUrlPart = "inventory.html";
+    }
+
+    // An element can be located using ExpectedConditions through an explicit wait
+    public bool IsLoaded => Wait.UntilIsDisplayedById("inventory_filter_container");
+
+    //elements are not accessible for the external test API
+    private IWebElement LogoutLink => _driver.FindElement(By.Id("logout_sidebar_link"));
+
+    // An element can also be located without ExpectedConditions
+    private IWebElement HamburgerElement => _driver.FindElement(By.ClassName("bm-burger-button"));
+
+    public int ProductCount =>
+        _driver.FindElements(By.ClassName("inventory_item")).Count;
+
+    //We are using Composition to have one page object living in another page object
+    public CartComponent Cart => new CartComponent(_driver);
+
+    public void Logout()
+    {
+        HamburgerElement.Click();
+        LogoutLink.Click();
+    }
+}
+```
+
+<a id="1-the-page-object-class-has-a-great-name-that-tells-us-exactly-what-the-html-page-or-html-component-does" />
+
+##### 1\. The page object class has a great name that tells us exactly what the HTML page or HTML component does
+
+If you cannot name your page object so that it’s 100% clear what’s inside of that page object, then it’s likely your page object does too much.
+
+What does this page object do **SauceDemoLoginPage**? What methods will be exposed for a user to interact with the HTML?
+
+```csharp
+using System.Reflection;
+using Common;
+using OpenQA.Selenium;
+
+namespace Web.Tests.Pages
+{
+    public class SauceDemoLoginPage : BasePage
+    {
+        public SauceDemoLoginPage(IWebDriver driver) : base(driver)
+        {
+        }
+
+        private readonly By _loginButtonLocator = By.ClassName("btn_action");
+        public bool IsLoaded => new Wait(_driver, _loginButtonLocator).IsVisible();
+        private IWebElement PasswordField => _driver.FindElement(By.Id("password"));
+        private IWebElement LoginButton => _driver.FindElement(_loginButtonLocator);
+        private readonly By _usernameLocator = By.Id("user-name");
+        private IWebElement UsernameField => _driver.FindElement(_usernameLocator);
+
+        public SauceDemoLoginPage Open()
+        {
+            _driver.Navigate().GoToUrl(BaseUrl);
+            return this;
+        }
+
+        public ProductsPage Login(string username, string password)
+        {
+            SauceJsExecutor.LogMessage(
+                $"Start login with user=>{username} and pass=>{password}");
+            var usernameField = Wait.UntilIsVisible(_usernameLocator);
+            usernameField.SendKeys(username);
+            PasswordField.SendKeys(password);
+            LoginButton.Click();
+            SauceJsExecutor.LogMessage($"{MethodBase.GetCurrentMethod().Name} success");
+            return new ProductsPage(_driver);
+        }
+    }
+}
+```
+
+Are you surprised by what’s inside of this class? Probably not.
+
+<a id="2-the-page-class-contains-methods-to-interact-with-the-html-page-or-component" />
+
+##### 2\. The page class contains methods to interact with the HTML page or component
+
+The only public methods that are allowed in your page objects are those that an end-user can perform to your web application.
+
+<Figure src="/blog/automation-patterns-antipatterns/14-Screen-Shot-2019-10-24-at-8-19-56-AM.png" width="810" height="610" alt="sauce demo login page" caption="sauce demo login page" />
+
+On this HTML page, the only two actions that an end-user can perform are **Open()** and **Login()**
+
+The user cannot **ConnectToSQL(),** **OpenExcel()**, **ReadPDF().** Hence, such actions should never be found in your automated UI tests.
+
+<a id="3-page-objects-should-directly-store-properties-and-methods-or-be-composed-of-objects-that-expose-access" />
+
+##### 3\. Page objects should directly store properties and methods or be composed of objects that expose access
+
+Page objects should allow us the capability to interact with the application through a single interface, the page object. This means that if we want to interact with the login page, we interact with it through `SauceDemoLoginPage` class.
+
+For example, we might want to login `SauceDemoLoginPage.Login("username", "password");`
+
+What we want to avoid happening is for all the locators to live in a separate class for example. This makes the code more complicated unnecessarily. Although there are many articles claiming that separating methods from properties for a page object helps to maintain Single Responsibility Principle, that’s actually not correct. The SRP is viewed from the actor who can cause a change to our code. Technically, there is only a single actor that can ever break our class, the Developer. There is no other actor that will solely modify HTML elements without modifying the HTML page.
+
+In conclusion, avoid separating out locators from methods for a page object. It’s over-optimization. However, a page may be composed of multiple components that are relevant to that page object. 
+
+<a id="4-the-page-object-exposes-only-methods-that-an-end-user-would-use-to-interact-with-the-html" />
+
+##### 4\. The page object exposes only methods that an end-user would use to interact with the HTML
+
+On this HTML page, the only two actions that an end-user can perform are **Open()** and **Login()**
+
+The user cannot **ConnectToSQL(),** **OpenExcel()**, **ReadPDF().** Hence, such actions should never be found in your automated UI tests.
+
+<a id="5-a-page-object-doesn-t-need-to-be-an-entire-html-page-it-can-be-a-small-component-as-well" />
+
+##### 5\. A page object doesn’t need to be an entire HTML page, it can be a small component as well
+
+This concept is known as composition in programming. And we want to prefer composition over inheritance. Here’s a code example of how composition is used to create cleaner and tighter page objects.
+
+```csharp
+// A car is Composed of an enginer, wheels, and so on.
+// Hence, it contains these objects inside of the class
+public class Car
+{
+  Engine engine;
+  Wheels wheels;
+}
+```
+
+```csharp
+public class Engine
+{
+  //The Engine.java does stuff related to the engine
+}
+```
+
+Here’s a video tutorial on Page Objects where I tackle this topic in depth
+
+<YouTube id="ZLS9sU2A9QA" />
+
+* * *
+
+* * *
+
+<a id="front-door-first-principle" />
+
+### Front Door First Principle
+
+> Objects have several kinds of interfaces. There is the “public” interface that clients are expected to use and there may also be a “private” interface that only close friends should use. Many objects also have an “outgoing interface” consisting of the used part of the interfaces of any objects on which they depend.
+> 
+> The types of interfaces we use has an influence on the robustness of our tests. The use of [Back Door Manipulation](http://xunitpatterns.com/Back%20Door%20Manipulation.html) *(page X)* to set up the fixture or verify the expected outcome or a test can result in [*Overcoupled Software*](http://xunitpatterns.com/Fragile%20Test.html#Overcoupled%20Software) *(see Fragile Test on page X)* that needs more frequent test maintenance. Overuse of [Behavior Verification](http://xunitpatterns.com/Behavior%20Verification.html) *(page X)* and [Mock Objects](http://xunitpatterns.com/Mock%20Object.html) *(page X)* can result in [*Overspecified Software*](http://xunitpatterns.com/Fragile%20Test.html#Overspecified%20Software) *(see Fragile Test)* and tests that are more brittle and that may discourage developers from doing desirable refactorings.
+> 
+> When all choices are equally effective we should use [round trip tests](http://xunitpatterns.com/round%20trip%20test.html) to test our [system under test (SUT)](http://xunitpatterns.com/SUT.html). To do this, we test an object through it’s public interface and use [State Verification](http://xunitpatterns.com/State%20Verification.html) *(page X)* to determine whether it behaved correctly. If this is not sufficient to accurately describe the expected behavior we can make our tests [layer-crossing tests](http://xunitpatterns.com/layer-crossing%20test.html) and use [Behavior Verification](http://xunitpatterns.com/Behavior%20Verification.html) to verify the calls the [SUT](http://xunitpatterns.com/SUT.html) makes to [depended-on components (DOCs)](http://xunitpatterns.com/DOC.html). If we must replace a slow or unavailable [DOC](http://xunitpatterns.com/DOC.html) with a faster [Test Double](http://xunitpatterns.com/Test%20Double.html) *(page X)*, using a [Fake Object](http://xunitpatterns.com/Fake%20Object.html) *(page X)* is preferable because it encodes fewer assumptions into the test (the only assumption being that the component that the [Fake Object](http://xunitpatterns.com/Fake%20Object.html) replaces is actually needed.)[XUnit Patterns](http://xunitpatterns.com/Principles%20of%20Test%20Automation.html#Use%20the%20Front%20Door%20First)
+
+<a id="best-practice-tests-should-be-under-30-sec-on-your-local-resources" />
+
+### Best Practice: Tests should be under 30 sec on your local resources
+
+Another automated testing best practice is that your automated tests should be fast! I can’t stress this enough. Unit and integration tests are already really fast, they run in milliseconds. A unit test can be as fast as one millisecond. So we don’t need to worry about this.
+
+**Here’s the kicker:**
+
+UI tests are really slow because they run in seconds. Thousands of times slower than unit and integration tests! Even if you do everything perfectly.
+
+So it’s really important to focus on fast UI tests in your test framework design.
+
+> Your automated UI tests should take no longer than 30 seconds on your local resources.Nikolay Advolodkin
+
+> Automated tests should take no longer than two minutes to executeDanny MacKeown, Automation Guild 2019
+
+The reason for this boils down to the fact that you want your builds to be fast. Meaning no more than 20 minutes. Otherwise, nobody will have the patience to wait so long for automation feedback.
+
+To accomplish a requirement of fast builds. You need small, fast tests, running in parallel. I’m sorry, there is no other way.
+
+* * *
+
+<a id="automated-testing-best-practices-video" />
+
+### Automated Testing Best Practices Video
+
+If you like video format, I recorded a video presentation of the most important automation best practices that I could pack in 60 minutes. I include lost of code examples.
+
+<YouTube id="r9K-2OJUmOE" />
+
+* * *
+
+<a id="not-automated-testing-best-practices" />
+
+## Not! Automated Testing Best Practices
+
+Our industry pretty much sucks as a whole. The majority of us have no clue how to do test automation well.
+
+For example, look at this analysis of **2 Billion Tests** from all over the globe:
+
+<Figure src="/blog/automation-patterns-antipatterns/16-pass-rate.png" width="1206" height="500" alt="average test pass rate" />
+
+How disappointing is that?
+
+Some of my unit tests have been running without failure for years. While our GUI automation can’t even pass more than 9 times out of 10 runs.
+
+This means that if you run your test every workday, in 2 weeks, your test will fail at least one time.
+
+**It gets better:**
+
+Now that we know the problem, we can work towards a solution! The question is why are we so bad at GUI automation?
+
+It’s because of these anti-patterns below…
+
+* * *
+
+## Find out how our clients are running automation 66% faster!   Get your Free framework assessment.
+
+[**See if you qualify**](https://forms.clickup.com/2314027/f/26ktb-6387/56LKNUZ9BDYXSC73SY)
+
+ℹ️ We have limited space for only 1 assessment per quarter
+
+* * *
+
+<a id="cucumber-only" />
+
+### Don’t use Cucumber-like tools without following BDD
+
+There is one anti-pattern that is guaranteed to kill your test automation success and that’s using Cucumber or other Gherkin style tools without following the process of BDD. Hence, this pattern is at the top of the list.
+
+> 7 different solution architects with 7 different careers. 75+ years of combined test automation experience. 3 million tests per month executed. And approximately 50 clients per year seen all over the world.
+> 
+> I can confidently say that using a Gherkin style tool without following the process of BDD will kill your automation project. No questions asked.Nikolay Advolodkin
+
+Don’t want to listen to me and the other six test automation experts? Here is the creator of Cucumber.
+
+> If all you need is a testing tool for driving a mouse and a keyboard, don’t use Cucumber. There are other tools that are designed to do this with far less abstraction and typing overhead than Cucumber.Aslak Hellesøy, creator of Cucumber
+
+I shouldn’t have to say any more. I pray that this is enough to help you reconsider your decision 🙏. And save your test automation project from certain death 🙏. However, [you can read about why that’s the case](/automation-patterns-antipatterns/#bdd).
+
+<a id="using-aftereach-or-afterall-hooks-for-test-clean-up" />
+
+### Using afterEach or afterAll hooks for test clean up
+
+Avoid using afterEach of afterAll hooks for cleaning up test state. Instead, we want to use beforeEach for cleaning up test state.
+
+This best practice came from Gleb Bahmutov ([Cypress.io best practices](https://docs.cypress.io/guides/references/best-practices.html#Using-after-or-afterEach-hooks)). Big Thanks 🙏
+
+* * *
+
+* * *
+
+<a id="tests-must-not-rely-on-outcome-of-previous-tests" />
+
+### Tests must not rely on outcome of previous tests
+
+This automation anti-pattern is one of the worst that we can ever make. Let’s imagine that we have test B that relies on the outcome of test A. If test A fails then test B will also fail. However, test B will fail simply because it didn’t get the appropriate state from test A. Not because of an actual bug.
+
+Furthermore, creating this anti-pattern will make parallelization impossible. Without parallelization, an automation project cannot succeed.
+
+Here is some more [documentation from Cypress](https://docs.cypress.io/guides/references/best-practices.html#Organizing-Tests-Logging-In-Controlling-State)
+
+* * *
+
+* * *
+
+<a id="element-interactions" />
+
+### Anti-Pattern: UI tests should not expose interactions with web elements
+
+The benefit of using Page Objects is that they abstract implementation logic from the tests. The tests can be focused on the scenarios and not implementation. The idea is that the scenario doesn’t change, but the implementation does.
+
+For example, this method is performing a bunch of operations for some actions. At any point, we may need to change our steps. Maybe a new field got added and now we need to check a checkbox. Or, maybe one of the fields gets removed.
+
+Even more common, you want to add logging. In that case, every test will need to be accommodated for this new flow (could be 1000s of tests).
+
+```csharp
+UsernameField.Clear();
+UsernameField.SendKeys(username);
+PasswordField.Clear();
+PasswordField.SendKeys(password);
+LoginButton.Click();
+SauceJsExecutor.LogMessage($"{MethodBase.GetCurrentMethod().Name} success");
+```
+
+**It gets better:**
+
+The right way to solve this problem is to encapsulate all of the steps into a method called *Login()*.
+
+Now, it doesn’t matter if we have to add logging, add an extra field, remove a field and so on. There will be a single place to update the Login steps, in the Login() method. Take a look below.
+
+This test will only need to change for a single reason…
+
+If requirements change, and there’s no way around that:
+
+```csharp
+[Test]
+public void ShouldNotBeAbleToLoginWithLockedOutUser()
+{
+    _loginPage.Open();
+    //Although I would likely never test a login through the UI. This is just a small example
+    var productsPage = _loginPage.Login("locked_out_user", "secret_sauce");
+    productsPage.IsLoaded.Should().BeFalse("we used a locked out user who should not be able to login.");
+}
+```
+
+* * *
+
+<a id="more-automation" />
+
+### Anti-Pattern: Assuming that more UI automation is better
+
+What do you think are some guaranteed ways to lose trust in automation and kill an automation program?
+
+If you read the title and guessed the answer, great job 🙂
+
+There are very few automation anti-patterns that will kill an automation program faster than using UI automated testing to try and test everything.
+
+> There are very few automation anti-patterns that will kill an automation program faster than using UI automation to try and test everything.
+
+<Figure src="/blog/automation-patterns-antipatterns/18-achievement-business-coffee-6307-1080x720.jpg" width="1080" height="720" alt="automating less is better than automating more tests" />
+
+[Image source](https://www.pexels.com/photo/less-is-more-6307/)
+
+More automation is not necessarily better. I would argue that for an organization that is starting, less stable automation is magnitudes of times better than more automation.
+
+**Here’s some cool info:**
+
+I’m super lucky that I get to consult and work with clients all over the world. So I’ve seen all sorts of organizations.
+
+<Figure src="/blog/automation-patterns-antipatterns/20-2018-09-28-1213.png" width="1904" height="640" alt="lots of UI tests" caption="An organization that ran 123K UI tests in 7 days" />
+
+This organization has executed **123K automated UI tests in 7 days!**
+
+**Here’s the kicker:**
+
+Take a look at this graph and how **only 15% of the tests passed**.
+
+<Figure src="/blog/automation-patterns-antipatterns/22-2018-09-28-1216.png" width="1914" height="644" alt="very low passing rate" caption="the very low passing rate" />
+
+Can this organization say that out of 100% of the features that are being tested here, that 85% of those features contain bugs?
+
+In that case, this would mean that approximately **~104,000 bugs were logged in the 7 days.** That seems, highly unlikely, if not impossible…
+
+So then, what are all of these failures and errors?
+
+They’re called **false positives**. Failing tests that are not a result of actual faults in the software being tested.
+
+<a id="who-is-sorting-through-all-of-these-failures" />
+
+#### Who is sorting through all of these failures?
+
+Is there someone on the team that is sitting and sorting through all of these failures?
+
+**~104,000 non-passing tests…** 
+
+**So what is the reason that these tests failed?** 
+
+A. Because there is one bug in the application that caused all of these failures?
+
+B. Because two or more bugs are causing all of these problems?
+
+C. Because there are **~zero bugs** found and the majority of the failures are a result of worthless automation efforts?
+
+I’d bet $104,000 that it’s **option C** 😂
+
+**It gets worse:**
+
+How many automation engineers do you need to sort through 104,000 non-passing tests in one week?
+
+When I ran a team of four automation engineers, we could barely keep up with a few non-passing automated tests per week.
+
+So let’s be honest… nobody is analyzing these non-passing automated tests…
+
+***would you agree? Please comment below what you think!***
+
+So then what value are these test cases serving the entire organization? What decision do they help the business to make about the quality of the software?
+
+If there was an 85% failure rate in your manual testing, do you move your software to production? Of course not…
+
+So why is it acceptable for so many automated tests to run, not pass, and continue to run?
+
+It’s because this automation is just noise now… The noise that nobody listens to… Not even the developers of the automation.
+
+**Automation Failed!**
+
+**But, there’s hope…**
+
+Some organizations do automation correctly as well. Here’s an example of one…
+
+<Figure src="/blog/automation-patterns-antipatterns/24-passing-tests.png" width="2242" height="586" alt="passing tests" caption="automated tests executed over a year" />
+
+**Why is this automation suite more successful?**
+
+First, notice that it was executed over a year. And over a year there were not that many failures…
+
+Yes, this doesn’t necessarily imply that the automation is successful.
+
+However…
+
+Which automation would you trust more?
+
+A. One that is passing for months at a time and gets a failure once every couple of months?
+
+B. Or the automation that has only 15% passing tests of which 104,000 are not passing?
+
+**Here’s where it gets interesting:**
+
+If you think about a single feature – Facebook login or Amazon search for example.
+
+How often does that featured break based on your experience? Very rarely, if ever (based on my experience at least)
+
+So if you have an automated test case for one of these features, which of the graphs above look more like how the development of the feature behaves?
+
+That’s your answer…
+
+Your automated UI tests should behave almost identical to how the actual development of a feature happens.
+
+Meaning, passing the majority of the time, like a minimum 99.5% of the time and failing once in a blue moon, due to a real regression.
+
+**It gets better:**
+
+**So what can you do to make your automation valuable?**
+
+It’s simple…
+
+> If your automation is not providing a correct result more than 99.5% of the time, then stop automating and fix your reliability! You’re only allowed 5 false positives out of 1000 test executions. That’s called quality automation.
+
+Is that impossible?
+
+Not at all. I ran the team that had these execution results below…
+
+<Figure src="/blog/automation-patterns-antipatterns/26-passing-tests-1080x282.png" width="1080" height="282" alt="passing tests" caption="automated tests executed over a year" />
+
+Sadly, I no longer have the exact passing percentage of these metrics. But if you do a little estimation, you’ll be able to see that the pass rate of this graph is extremely high. 
+
+You can see the red dots on the graph, which signify a failure. Note one of the long non-failure gaps between build ~1450 and ~1600. That’s ~150 builds of zero failures.
+
+Furthermore, I can say that **every failure on this graph was a bug that was introduced into the system**. Not a false positive which is so common in UI automation.
+
+By the way, I’m not saying this to impress you…
+
+Rather, to impress upon you the idea that 99.5% reliability from UI automation is possible and I’ve seen it.
+
+**It gets better:**
+
+I recently came across [an excellent post by a Microsoft Engineer](https://blogs.msdn.microsoft.com/bharry/2017/06/28/testing-in-a-cloud-delivery-cadence/) talking about how they spent two years moving tests from UI automation to the right level of automation and the drastic improvement in automation stability. Here’s the chart:
+
+-   &lt;Figure src="/blog/automation-patterns-antipatterns/27-Test-Reliability-1024x404.png" width="1024" height="404" alt="" />
+    
+
+Check out after Sprint 116 when they introduced their new system!
+
+Just another success story of a company that does automation at the right system level.
+
+**Want an in depth explanation with real code?** Check out this video
+
+<YouTube id="90Afyo0bI7M" />
+
+* * *
+
+<a id="excel" />
+
+### Anti-Pattern: Using complicated data store such as Excel
+
+<Figure src="/blog/automation-patterns-antipatterns/29-post-images-6.jpg" width="1920" height="1080" alt="how to use microsoft excel for test data management in automation testing" />
+
+One of the **most common** questions from my students and clients is how to use Excel for test data management in test automation.
+
+> Don’t use Excel to manage your automation test data
+
+{/* missing image: https://ultimateqa.com/wp-content/uploads/2021/02/1-1024x449.png */}
+
+I understand the rationale behind using Excel for your test data. I’ve been doing test automation for a long time and I know about Keyword Driven Frameworks and trying to let manual testers create automated tests in Excel. My friends…
+
+It just doesn’t work…
+
+**Why using Excel is an anti-pattern?**
+
+1.  The logic to read and manage Excel adds extra overhead to your test automation that isn’t necessary. You will need to write 100s of lines of code just to manage an Excel object and read data based on column headers and row locations. It’s not easy and is prone to error. I’ve done it many years ago. All of this will eat into your automation time and provide no value to the business that employs you.
+2.  You will be required to manage an external solution component for your test automation. This means that you can never simply pull the code and have everything work. You will need to have a license for Excel. You will need to download and install it. And you will need to do this for all of your automation environments. Usually local, Dev, Test, and Prod. This means that you need to manage this Excel instance in all of these environments. This is simply another waste of your time and effort.
+
+[Here’s a great example](https://www.linkedin.com/posts/andrejs-doronins-195125149_testautomation-testing-testdatamanagement-activity-6884838629001236480-Kv4R) from Andrejs Doronis comparing the complexity of Excel vs a JSON object
+
+<Figure src="/blog/automation-patterns-antipatterns/33-excel-vs-json.jpg" width="1372" height="655" alt="" caption="Reading data from Excel vs reading data from an object by Andrejs Doronins" />
+
+**What are your solutions?**
+
+1.  The best solution is if you have an API that you can use to read test data. This is a robust and lightweight solution
+2.  If you don’t have an API, you can talk directly to the Database. This takes much less code and it’s much easier to manage than working with and external Excel object.
+3.  If you must use some data source, use a .CSV, .JSON, or .YML. CSV and JSON files are extremely lightweight, easy to read, and can be directly inserted into your automation code. This means that you will be able to simply download the code and have everything work without needing to perform other installations (examples of how to do this can be found in the [Complete Selenium w/ Java Bootcamp](/selenium-java)).
+4.  You can even use data classes that make code extremely readable and easy to maintain. See examples below.
+
+#### Data-Driven Test Using a Data Object in C#
+
+Take a look at how the `[TestFixtureSource(typeof(TestConfigData), nameof(TestConfigData.PopularDesktopCombinations))]` is used to read data from `TestConfigData.PopularDesktopCombinations`. You can see the code below.
+
+```csharp
+namespace Core.BestPractices.Web.Tests.Desktop
+{
+// We read data from TestConfigData.PopularDesktopCombinations
+    [TestFixtureSource(typeof(TestConfigData), nameof(TestConfigData.PopularDesktopCombinations))]
+    [TestFixture]
+    [Parallelizable]
+    public class DesktopTests : WebTestsBase
+    {
+        [SetUp]
+        public void SetupDesktopTests()
+        {
+            if (BrowserOptions.BrowserName == "chrome")
+                ((ChromeOptions) BrowserOptions).AddAdditionalCapability("sauce:options", SauceOptions, true);
+            else
+                BrowserOptions.AddAdditionalCapability("sauce:options", SauceOptions);
+            Driver = GetDesktopDriver(BrowserOptions.ToCapabilities());
+        }
+
+        public string BrowserVersion { get; }
+        public string PlatformName { get; }
+        public DriverOptions BrowserOptions { get; }
+
+        public DesktopTests(string browserVersion, string platformName, DriverOptions browserOptions)
+        {
+            if (string.IsNullOrEmpty(browserVersion))
+                BrowserVersion = browserVersion;
+            if (string.IsNullOrEmpty(platformName))
+                PlatformName = platformName;
+            BrowserOptions = browserOptions;
+        }
+
+        [Test]
+        [Category("ci")]
+        public void LoginWorks()
+        {
+            var loginPage = new LoginPage(Driver);
+            loginPage.Visit();
+            loginPage.Login("standard_user");
+            new ProductsPage(Driver).IsVisible().Should().NotThrow();
+        }
+```
+
+```csharp
+public class TestConfigData
+    {
+        private const string defaultBrowserVersion = "";
+        private const string defaultOS = "";
+
+        private static readonly SafariOptions safariOptions = new()
+        {
+            BrowserVersion = "latest",
+            PlatformName = "macOS 10.15"
+        };
+
+        private static readonly ChromeOptions chromeOptions = new()
+        {
+            BrowserVersion = "latest",
+            PlatformName = "Windows 10",
+            UseSpecCompliantProtocol = true
+        };
+
+        private static readonly EdgeOptions edgeOptions = new()
+        {
+            BrowserVersion = "latest",
+            PlatformName = "Windows 10"
+        };
+
+        internal static IEnumerable PopularDesktopCombinations
+        {
+            get
+            {
+                yield return new TestFixtureData("latest", "macOS 10.15", safariOptions);
+                yield return new TestFixtureData(defaultBrowserVersion, defaultOS, chromeOptions);
+                yield return new TestFixtureData(defaultBrowserVersion, defaultOS, edgeOptions);
+            }
+        }
+    }
+```
+
+## Data-Driven Test Using a Class in Java
+
+Check out how the tests here are data driven using Junit and Java. 
+
+```csharp
+@RunWith(Parameterized.class)
+public class DesktopTests extends SauceBaseTest {
+    /*
+     * Configure our data driven parameters
+     * */
+    @Parameterized.Parameter
+    public Browser browserName;
+    @Parameterized.Parameter(1)
+    public String browserVersion;
+    @Parameterized.Parameter(2)
+    public SaucePlatform platform;
+
+    @Parameterized.Parameters()
+    public static Collection<Object[]> crossBrowserData() {
+        return Arrays.asList(new Object[][] {
+                { Browser.CHROME, "latest", SaucePlatform.WINDOWS_10 },
+                { Browser.CHROME, "latest-1", SaucePlatform.WINDOWS_10 },
+                { Browser.SAFARI, "latest", SaucePlatform.MAC_MOJAVE },
+                { Browser.CHROME, "latest", SaucePlatform.MAC_MOJAVE }
+        });
+    }
+
+    @Override
+    public SauceOptions createSauceOptions() {
+        SauceOptions sauceOptions = new SauceOptions();
+        sauceOptions.setBrowserName(browserName);
+        sauceOptions.setBrowserVersion(browserVersion);
+        sauceOptions.setPlatformName(platform);
+
+        return sauceOptions;
+    }
+```
+
+You can learn how to do this and much more data-driven testing in the [Complete Selenium w/ Java Bootcamp](/selenium-java).
+
+* * *
+
+<a id="replace-manual" />
+
+### Anti-Pattern: Trying to use UI automation to replace manual testing
+
+<Figure src="/blog/automation-patterns-antipatterns/35-post-images-7.jpg" width="1920" height="1080" alt="automated testing best practices pyramid" />
+
+> Automated testing CANNOT replace manual testing
+
+I have not read or seen any automation luminary who claims that automation can replace manual testing. Not right now at least… Our tools have a long way to go.
+
+However, I know and have worked with managers and teams whose goal with test automation is exactly what cannot be done.
+
+And so these individuals pursue an impossible goal… Leading to failure.
+
+**Side note:**
+
+The use of automation can drastically enhance the testing process. If used correctly, automation can reduce, not replace the manual testing resources required.
+
+<a id="why-can-t-automation-replace-manual-testing" />
+
+#### **Why can’t automation replace manual testing?**
+
+**First**, it’s impossible to get 100% automated code coverage. It’s impossible to get 100% code coverage in general…
+
+That’s why we still have bugs on all the apps in the world, right?
+
+Anyways, if you can’t automate 100% of the application, that means that you will need some sort of manual testing to validate the uncovered portions.
+
+**Second**, UI automation is too flaky, too hard to write, and too hard to maintain to get over 25% code coverage…
+
+This is based on experience and is an approximation… I don’t have any hard data on this.
+
+However, you don’t want higher coverage than 25%. I guess it’s possible that with a well designed, modular system, you might be able to get higher UI automation coverage.
+
+But this is an exception, not the rule.
+
+**Here’s the kicker:**
+
+Using a combination of unit, integration, and UI automation, you might get close to 90% test coverage…
+
+But that’s hard. And this is just a side note.
+
+**Finally**, some manual activities cannot be automated technologically…
+
+That’s for now and for at least a few years in my opinion.
+
+Some examples include [UX Testing and Exploratory Testing](https://learn.techbeacon.com/units/how-does-manual-testing-fit-continuous-testing-cycle).
+
+So again, if you are trying to use automation to replace manual testing, it will be a futile effort.
+
+<a id="what-is-the-solution" />
+
+#### What is the solution?
+
+Use the automation testing pyramid and don’t try to replace manual testing with UI automation.
+
+Use UI automation and any automation to **enhance** the testing process.
+
+-   A combination of manual testing and automated testing will create the best end-user experience.
+
+* * *
+
+<a id="anti-pattern-mixing-functional-automation-with-performance-testing" />
+
+### Anti-Pattern: Mixing functional automation with performance testing
+
+Description coming soon… In the meantime, do your research about whether this makes sense. Remember, that at the end of the day, it is always faster to run ten, one-minute tests in parallel than to run a single five-minute test.
+
+It’s one minute to suite feedback time versus five minutes. Even if each test takes longer because of the setup and teardown, parallelization is still the most powerful way to scale your automation. Trying to scale your automation by combining tests is not the right approach.
+
+* * *
+
+<a id="kdf" />
+
+### Anti-Pattern: Keyword Driven Testing
+
+Keyword Driven Testing (KDT) is a remnant from the early to mid-2000s when QTP aka UFT was popular.
+
+At one point, we believed that somehow we can write test automation code in such a way that manual testers will be able to string together a bunch of keywords aka functions to make tests.
+
+We used Excel sheets to design test cases by stringing together a bunch of functions ([using Excel sheets is also an anti-pattern](/automation-patterns-antipatterns/#excel))
+
+Here’s an example:
+
+<a id="what-are-the-problems-with-kdt" />
+
+#### What are the problems with KDT?
+
+**1. [KDT is losing popularit](https://trends.google.com/trends/explore/TIMESERIES/1634134200?hl=en-US&tz=240&date=today+5-y&q=keyword+driven+testing&sni=3)y**
+
+First, let’s define MY success criteria:
+
+-   100% reliability from test automation
+-   Automation executes on every pull request
+-   Full automation suite runs in less than 10 min
+-   Automation is used as a quality gate by the entire organization
+
+I’m fortunate enough to work with dozens of clients and hundreds of automation engineers, every single year.
+
+In my entire career, I have never seen a successful implementation of Keyword Driven Testing. That doesn’t mean that there isn’t one. But…
+
+Why are they so rare? And do you want to take the chance to beat these odds?
+
+Even worse, no automation luminary (Simon Stewart, Titus Fortner, Angie Jones, Alan Richardson, Paul Merrill…) even mentions KDT when they talk UI test automation…
+
+There must be a reason why don’t you think?
+
+**2\. Unnecessary code must be written to read some external source like Excel**
+
+Someone has to write the logic to manage the reading and writing to an Excel spreadsheet. Or some other data source. But the Excel spreadsheet is most common with this approach because it’s the most user-friendly for manual testers.
+
+That logic is pretty absurd and takes A LOT of time to get right. Here’s what mine looked like:
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Runtime.InteropServices;
+using log4net;
+using log4net.Config;
+using Microsoft.Office.Core;
+using Microsoft.Office.Interop.Excel;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
+using Environment = System.Environment;
+
+namespace AutomatedTesting.DriverScript
+{
+    public class Program
+    {
+        #region Fields and Properties
+        private static string _emailTo, _timeStamp;
+
+        private static ILog _log = LogManager.GetLogger(typeof(Program).FullName);
+        /// A suffix to append to the class name / namespace of a class to form a default assembly qualified name.
+        private const string DEFAULT_ASSEMBLY_QUALIFIED_SUFFIX = " Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
+        private static Dictionary<string, bool> _testResults = new Dictionary<string, bool>();
+
+        #endregion
+
+        public static int Main(string[] args)
+        {
+            var exitCode = ExitCode.Success;
+            GlobalContext.Properties["hostname"] = Environment.MachineName;
+            XmlConfigurator.Configure(new FileInfo(string.Format(@"{0}\log4net.config", AppDomain.CurrentDomain.BaseDirectory)));
+
+            BaseTester bt = null;
+
+            Application xlApp = null;
+            Workbook wb = null;
+            Workbooks workBooks = null;
+            Worksheet testCasesSheet = null;
+            Worksheet browsersControlSheet = null;
+            CommandLineParameters parameters = null;
+            var exHandler = new ExceptionHandler();
+            var allTestData = new AllTestData();
+            var testMetadata = new TestMetadata();
+            var externalTestData = new TestDataFromExternalSource();
+
+            if (args.Length == 0)
+            {
+                _log.Fatal("args is null");
+                exitCode = ExitCode.EmptyArguments;
+                //TODO send email
+            }
+            else
+            {
+                try
+                {
+                    _log.Info("STARTED FRAMEWORK....");
+                    _timeStamp = DateTime.Now.ToString("yyyy.MM.dd.HH.mm.ss.fff");
+
+                    allTestData.Metadata = testMetadata;
+                    allTestData.External = externalTestData;
+
+                    parameters = FillInCommandLineParameters(args);
+                    Notifier.SendHeartbeat(parameters.Environment);
+                    Notifier.ResetExceptionMessage();
+
+                    //This is the path of the entire suite of tests for some application that is specified from command line
+                    var originalTestSuiteFilePath =
+                        Path.GetFullPath("TestControls/" + string.Format(ExcelManager.TestSuiteFileName, parameters.App));
+                    var uniqueTestSuiteFilePath = ExcelManager.CreateUniqueWorkbookInstance(originalTestSuiteFilePath,
+                        parameters, _timeStamp);
+
+                    //2. Create the DB objects to work with the test cases
+                    xlApp = new Application {FileValidation = MsoFileValidationMode.msoFileValidationSkip};
+                    workBooks = xlApp.Workbooks;
+                    wb = workBooks.Open(uniqueTestSuiteFilePath, ReadOnly: false, Editable: true);
+
+                    testCasesSheet = (Worksheet) wb.Worksheets["TestCases"];
+                    browsersControlSheet = (Worksheet) wb.Worksheets["CrossPlatformTestingConfig"];
+
+                    var testCasesUsedRange = testCasesSheet.UsedRange;
+                    var testCasesHeadersDictionary = ExcelManager.GetColumnNamesAndIndices(testCasesUsedRange,
+                        testCasesSheet);
+
+                    var crossPlatformUsedRange = browsersControlSheet.UsedRange;
+                    var crossPlatformDictionary = ExcelManager.GetColumnNamesAndIndices(crossPlatformUsedRange,
+                        browsersControlSheet);
+
+                    //The buildName represents a single unique time where all of the tests are ran for some application.
+                    //Caution, BrowserStack removes any special characters and replaces them with a space, therefore, don't put special characters in the name
+                    //or the buildId will not be found in BrowserSTack
+                    var desiredTags = string.Join(" ", parameters.Tags);
+                    allTestData.Metadata.Build = string.Format("app:{0}. env:{1}. tags:{2}. user:{3}. time:{4}",
+                        parameters.App,
+                        parameters.Environment.ToUpper(), desiredTags, Environment.UserName, _timeStamp);
+                    ExcelManager.NumberOfRowsForCrossPlatformTesting = crossPlatformUsedRange.Rows.Count;
+
+                    var dataRetreiver = new ExcelDataRetreiver(browsersControlSheet, crossPlatformDictionary);
+                    //For every single row in the CrossPlatformTestingConfig sheet, we will perform the actions
+                    for (var i = ExcelManager.StartingRow; i < ExcelManager.NumberOfRowsForCrossPlatformTesting; i++)
+                    {
+                        //ConfigureBrowsersAndPlatformsBasedOnExecutionMode(browsersControlSheet, crossPlatformDictionary, i, _smokeTestMode);
+                        if (parameters.SmokeTestMode || parameters.LocalTestingMode)
+                            //if we're running smoke tests or local tests, we only need to run through 1 iteration of the tests
+                        {
+                            //set rowCount to 1 above the starting row so that only one iteration occurs
+                            ExcelManager.NumberOfRowsForCrossPlatformTesting = 4;
+                            //get only the first row of the spreadsheet which will signify the default os/browser combination
+                            allTestData.Metadata.Browser = dataRetreiver.RetreiveValue(i, "browser");
+                            allTestData.Metadata.Version = dataRetreiver.RetreiveValue(i, "version");
+                            allTestData.Metadata.Os = dataRetreiver.RetreiveValue(i, "os");
+                            allTestData.Metadata.OsVersion = dataRetreiver.RetreiveValue(i, "os_version");
+                            allTestData.Metadata.Resolution = dataRetreiver.RetreiveValue(i, "resolution");
+                        }
+                        else
+                        {
+                            allTestData.Metadata.Browser = dataRetreiver.RetreiveValue(i, "browser");
+                            allTestData.Metadata.Version = dataRetreiver.RetreiveValue(i, "version");
+                            allTestData.Metadata.Os = dataRetreiver.RetreiveValue(i, "os");
+                            allTestData.Metadata.OsVersion = dataRetreiver.RetreiveValue(i, "os_version");
+                            allTestData.Metadata.Resolution = dataRetreiver.RetreiveValue(i, "resolution");
+                        }
+
+                        //None of those should be null
+                        if (string.IsNullOrEmpty(allTestData.Metadata.Browser) ||
+                            string.IsNullOrEmpty(allTestData.Metadata.Version) ||
+                            string.IsNullOrEmpty(allTestData.Metadata.Os) ||
+                            string.IsNullOrEmpty(allTestData.Metadata.OsVersion)) continue;
+
+                        _log.InfoFormat(
+                            "Iterating through every single row of the spreadsheet to find the test cases that have an Execute flag.");
+                        for (var j = 3; j <= testCasesUsedRange.Rows.Count; j++)
+                        {
+                            var executeColumn = "execute" + parameters.Environment;
+                            var cellValue = ExcelManager.GetCellValue(testCasesSheet, testCasesHeadersDictionary, j,
+                                executeColumn);
+                            //sometimes there may be formatted cells in the spreadsheet that do not contain any data
+                            //we may iterate through them, but should not do any further action if there are no values
+                            if (string.IsNullOrEmpty(cellValue)) continue;
+
+                            allTestData.External.TestCaseName = ExcelManager.GetCellValue(testCasesSheet, testCasesHeadersDictionary, j,
+                                "classname");
+                            var strOfTagsFromExternalSource = ExcelManager.GetCellValue(testCasesSheet, testCasesHeadersDictionary, j,
+                                "tags");
+                            string[] tagsFromSpreadsheet;
+                            if (strOfTagsFromExternalSource != null)
+                                tagsFromSpreadsheet = strOfTagsFromExternalSource.ToLower().Split(',');
+                            else
+                            {
+                                throw new Exception(
+                                    string.Format("There are no tags set up for this test:{0}. Please add tags.",
+                                        allTestData.External.TestCaseName));
+                            }
+                            //check to see if the tags in the test cases sheet were called for in the 
+                            //execute file. If they match up, then those test cases will be ran
+                            var tagsMatch = tagsFromSpreadsheet.Any(x => parameters.Tags.Contains(x)) ||
+                                            parameters.Tags.Contains(allTestData.External.TestCaseName.ToLower());
+                            _log.Debug($"row:{j}. cellValue:{cellValue}. tags retrevied from external source:{strOfTagsFromExternalSource}. tagsMatch:{tagsMatch}");
+
+                            //if the execute flag is equal 'y' then that means that we are going to execute this test
+                            if (cellValue.ToLower().Trim() != "y" || !tagsMatch)
+                                continue;
+                            allTestData.External.NameSpace = ExcelManager.GetCellValue(testCasesSheet, testCasesHeadersDictionary, j,
+                                "namespace");
+
+                            //All of the optional parameters that don't necessarily need values
+                            var testLevelType = ExcelManager.GetCellValue(testCasesSheet, testCasesHeadersDictionary, j,
+                                "testlevel");
+                            //if this is an 'api' leve test case, then we dont need it iterating through the regression browsers
+                            //because that is not relevant. Therefore it will only do 1 loop, on 1 browser, through all the test cases
+                            if (!string.IsNullOrEmpty(testLevelType) && testLevelType.ToLower() == "api" || tagsFromSpreadsheet.Contains("smoke"))
+                                ExcelManager.NumberOfRowsForCrossPlatformTesting = 4;
+
+                            allTestData.External.TestCaseDescription =
+                                testCasesSheet.Cells[j, testCasesHeadersDictionary["description"]].value !=
+                                null
+                                    ? Convert.ToString(
+                                        testCasesSheet.Cells[j, testCasesHeadersDictionary["description"]].value)
+                                    : "Description was not specified in the test suite control";
+
+                            bt = CreateBaseTesterInstance(allTestData);
+                            bt.LocalTestingMode = parameters.LocalTestingMode;
+
+                            var testPass = false;
+                            //Execute the test case
+                            try
+                            {
+                                //Initialize the Driver
+                                allTestData.Metadata.Project = "WI_" + parameters.App.ToLower() + "_" + parameters.Environment;
+                                _log.InfoFormat("--Running Automation Check.");
+                                _log.InfoFormat("------App:'{0}'.", parameters.App);
+                                _log.InfoFormat("------Test Case Name:'{0}'.", allTestData.External.TestCaseName);
+                                //Set up envs
+                                //TODO, if Test set up fails, then we should not update the previous session with our results
+                                bt.TestSetUp(parameters, allTestData);
+                                bt.RunTest(parameters.Environment);
+                                testPass = true;
+                            }
+                            catch (WebDriverException e)
+                            {
+                                //"Failed to start up socket within 45000 ms. Attempted to connect to the following addresses:"
+                                Notifier.MyException = e;
+                                Notifier.SetEmailToGroup(parameters);
+                            }
+                            catch (WebException e)
+                            {
+                                Notifier.MyException = exHandler.HandleWebException(e);
+                            }
+                            catch (InvalidOperationException e)
+                            {
+                                //The browser/OS was not compatible for BrowserStack and Driver was never initialized.
+                                //This failure is not critical because the applications are still working and only the QA should be notified
+                                //Or it could be the "Not able to reach BrowserStack..." message.
+                                Notifier.MyException = e;
+                                Notifier.SetEmailToGroup(parameters);
+                            }
+                            catch (AssertFailedException e)
+                            {
+                                Notifier.MyException = e;
+                                Notifier.SetEmailToGroup(parameters);
+                            }
+                            catch (Exception e)
+                            {
+                                Notifier.MyException = e;
+                            }
+                            finally
+                            {
+                                _testResults.Add(string.Join(".", Guid.NewGuid(), parameters.Environment, parameters.App, allTestData.External.TestCaseName), testPass);
+                                bt.CleanUp(Notifier.MyException);
+                                exitCode = Notifier.LogUpdateAndEmailFailures(allTestData.External.TestCaseName, parameters, allTestData, bt);
+                                Notifier.ResetExceptionMessage();
+                            }
+                        } //End of the for loop that treverses the entire DB to count all the test cases
+                    } //End of the For loop for the CrossPlatformTestingConfig sheet
+                } //End of the try block where all the main logic lives
+                catch (ArgumentNullException e)
+                {
+                    _log.FatalFormat(
+                        "Error creating a BaseTester class as a result of missing classes. Not found:'{0}'",
+                        allTestData.External.NameSpace + "." + allTestData.External.TestCaseName);
+                    exitCode = ExitCode.BrowserStackSessionRetreivalFailure;
+                    //TODO move into SetEmailToGroup
+                    _emailTo = ConfigurationManager.AppSettings["qaEmailGroup"];
+                    Notifier.SendFailureNotification("Error creating a BaseTester class as a result of missing classes.",
+                        "Error creating a BaseTester class as a result of missing classes.", e, parameters, allTestData);
+                }
+                catch (COMException e)
+                {
+                    exitCode = exHandler.HandleCOMException(e);
+                    Notifier.SendFailureNotification("COMException", parameters.App, e, parameters, allTestData);
+                }
+                catch (Exception e)
+                {
+                    Notifier.SendFailureNotification("Uknown Exception", parameters.App, e, parameters, allTestData);
+                    exitCode = exHandler.HandleGenericException(e);
+                }
+                finally
+                {
+                    try
+                    {
+                        ExcelManager.ReleaseExcelObjects(ref wb, ref xlApp, ref testCasesSheet, ref browsersControlSheet, ref workBooks);
+                    }
+                    catch (COMException e)
+                    {
+                        exitCode = exHandler.HandleCOMException(e);
+                    }
+                    
+                    KillAllProcesses("EXCEL");
+                }
+
+            }   //End of the else loop that handles all of the logic for if the args != empty
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(Environment.NewLine + Environment.NewLine + "------------------ Automated Check Results ----");
+            Console.WriteLine("Application:{0}", parameters.App);
+            Console.Write("Environment:{0}", parameters.Environment);
+            Console.WriteLine(Environment.NewLine);
+
+            if (_testResults.Count != 0)
+            {
+                var testCount = 1;
+                foreach (var test in _testResults)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    if (test.Value == false)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        exitCode = ExitCode.TestFailed;
+                    }
+                    Console.WriteLine("{2}. Automated Check:{0} - Result:{1}", test.Key, test.Value, testCount);
+                    testCount++;
+                }
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine(
+                    "Docs for checking status of tests are here: http://sdlc.devcentral.equifax.com/confluence/display/WAL/How+to+execute+the+automated+functional+tests+through+Posh");
+            }
+            else
+            {
+                _log.WarnFormat(
+                    "The framework did not find any tests to run. Check to see if any tests actually exist for your Tags. App:'{0}'. Env:'{1}' that you passed in through command line.",
+                    parameters.App, parameters.Environment);
+                exitCode = ExitCode.NoTestsWereExecuted;
+            }
+            Notifier.SendHeartbeat(parameters.Environment);
+            _log.InfoFormat("{1}Exiting Framework. Result of batch run:{0}", exitCode, Environment.NewLine);
+           return (int)exitCode;
+
+        }
+
+        /// <summary>
+        /// Will kill the process that is specified
+        /// </summary>
+        /// <param name="processName">the name of the process such as Excel</param>
+        private static void KillAllProcesses(string processName)
+        {
+            foreach (var proc in Process.GetProcessesByName(processName))
+            {
+                proc.Kill();
+            }
+        }
+
+        private static BaseTester CreateBaseTesterInstance(AllTestData allTestData)
+        {
+           // var assemblyQualifiedName = nameSpace + "." + className + "," + nameSpace + "," + DEFAULT_ASSEMBLY_QUALIFIED_SUFFIX;
+            var assemblyQualifiedName =
+                $"{allTestData.External.NameSpace}.{allTestData.External.TestCaseName},{allTestData.External.NameSpace},{DEFAULT_ASSEMBLY_QUALIFIED_SUFFIX}";
+
+            var typeDynamic = Type.GetType(assemblyQualifiedName);
+            BaseTester bt;
+            if (typeDynamic != null)
+            {
+                bt = (BaseTester)Activator.CreateInstance(typeDynamic);
+                bt.TestName = allTestData.External.TestCaseName;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(
+                    "When trying to create the dynamic class, we did not find a reference of this project in the Main method." +
+                    "Please Add a reference of your project from which you are running a test to the Main method of the Program.cs class." +
+                    "Located in this project IXI.AutomatedTesting.DriverScript");
+            }
+
+            return bt;
+        }
+
+        /// <summary>
+        /// A method to decide who should receive the email based on different parameters.
+        /// For example, if it's Dev or Test, then BJ should not be receiving any of these failures.
+        /// If there are certain Exceptions that are not related to actual test failures but due to BrowserStack, then BJ should not receive those emails.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="type">Represents the exception that was thrown because sometimes we want to send an email to a special group based on some exception.</param>
+
+        private static CommandLineParameters FillInCommandLineParameters(string[] args)
+        {
+            var parameters = new CommandLineParameters();
+            parameters.AcceptSsl = false;
+            parameters.LocalTestingMode = false;
+            for (var i = 0; i < args.Length; i++)
+            {
+                switch (args[i].ToLower())
+                {
+                    case "-app":
+                        parameters.App = args[i + 1];
+                        break;
+                    case "-env":
+                        parameters.Environment = args[i + 1].ToLower();
+                        break;
+                    //-debug switch will override all
+                    case "-debug":
+                        parameters.DebugMode = true;
+                        Notifier.SetEmailToGroup(parameters);
+                        break;
+                    case "-tags":
+                        var tagsLine = args[i + 1];
+                        parameters.Tags = Array.ConvertAll(tagsLine.ToLower().Split(','), p => p.Trim());
+                        break;
+                    case "-localtesting":
+                        parameters.LocalTestingMode = true;
+                        break;
+                    case "-acceptssl":
+                        parameters.AcceptSsl = true;
+                        break;
+                }
+            }
+
+            //run through all of the tags, if one of them says Smoke test, then that means that IXI-Bugs needs to be notified
+            //TODO update query to the same one as the one in Excel using the .contains
+            foreach (var tag in parameters.Tags)
+            {
+                if (tag.ToLower() == "smoke")
+                {
+                    //set the smoke test mode to true so that we only run through one iteration of a default browser
+                    parameters.SmokeTestMode = true;
+                    Notifier.SetEmailToGroup(parameters);
+                }
+            }
+            
+            //TODO add error handling to make sure that things like app, env and tags are passed in to let the user know to pass them in
+            _log.DebugFormat("Tags list- app:{0} -env:{1} -debug:{2} -tags:{3} -acceptSsl:{4}", parameters.App, parameters.Environment, parameters.DebugMode, string.Join(",", parameters.Tags, parameters.AcceptSsl));
+            return parameters;
+        }
+    }
+}
+```
+
+Criticize it all you like, I know it’s bad. It was many years ago when I was learning C#.
+
+Regardless, if I did this today with better programming patterns, it would still be a waste of time.
+
+**It gets better:**
+
+Here is how I data drive my tests today:
+
+```csharp
+namespace Web.Tests.BestPractices
+{
+    [TestFixture]
+    [TestFixtureSource(typeof(CrossBrowserData), "LastTwoOnLinuxFirefoxChrome")]
+    [Parallelizable]
+    public class LogoutFeature : BaseTest
+    {
+        public LogoutFeature(string browser, string version, string os) : 
+            base(browser, version, os)
+        {
+        }
+        [Test]
+        public void ShouldBeAbleToLogOut()
+        {
+            var loginPage = new SauceDemoLoginPage(Driver);
+            loginPage.Open();
+            var productsPage = loginPage.Login("standard_user", "secret_sauce");
+            productsPage.Logout();
+            loginPage.IsLoaded.Should().BeTrue("we successfully logged out, so the login page should be visible");
+        }
+    }
+}
+```
+
+This even shows how the test case looks. But really, all of the logic for how to read test data for all of my tests is in this **single line of code**:
+
+<Figure src="/blog/automation-patterns-antipatterns/37-Screenshot-at-Apr-17-07-39-00.png" width="830" height="108" alt="nunit test data" caption="One line of code to read test data" />
+
+Concise, isn’t it? From 100s of lines of code to one (honestly, it’s not a 100% apples to apple comparison, but it’s close enough).
+
+Thanks so much, NUnit testing framework and all of the Developers that spent years maintaining this code 🙂
+
+Without you, I might still be stuck writing my code to do the same thing 🙁
+
+PS. Don’t get me started on all the logic required to parse and manage strings from an Excel sheet.
+
+**3\. More complexity by introducing external teams**
+
+If you’ve done test automation for some time, I think that you will agree with me that the success criteria that I defined above are not easy to meet?
+
+Even doing test automation without KDT, with simple Page Objects, most of us struggle to even achieve one of the KPIs.
+
+**It gets worse:**
+
+Imagine trying to do automation where you have to teach manual testers how to use your Excel spreadsheet. Not that there is anything wrong with manual testers.
+
+However, the problem is that now we need to add more communication, which means more potential for miscommunication aka problems.
+
+It’s just another unnecessary variable.
+
+Codeless test automation tools have been failing for decades, why are we trying to recreate them?
+
+**4\. KDT forces you to create your test runners**
+
+Because we want to read a spreadsheet and turn those keywords into functions using reflection, we can’t use the beautiful testing frameworks that have been developed for us by really smart people from [JUnit (Java)](https://junit.org/junit5/), [NUnit (C#)](https://nunit.org/), [Mocha (JS)](https://mochajs.org/) and so on…
+
+It seems like a waste of time to me, how about you?
+
+**5\. KDT forces your tests to be written with interaction commands in mind**
+
+The problem here is that Keyword Driven Testing encourages your tests into an improper mindset of `ClickButton()`, `SendKeys()`, `ClickElement()`…
+
+Your automated tests should be written through user actions versus element interactions:
+
+`Login()` versus `SendKeys(), SendKeys, ClickButton()`
+
+> Keyword Driven Frameworks encourage imperative tests not declarativeTitus Fortner, Selenium Ruby Bindings maintainer, Watir automation framework maintainer. Check out this talk at ~9:00 [https://www.youtube.com/watch?v=vg8um4bYQXI](https://www.youtube.com/watch?v=vg8um4bYQXI)
+
+<a id="here-are-some-of-my-videos-showing-these-problems" />
+
+#### Here are some of my videos showing these problems:
+
+[Advantages and disadvantages of KDF](/page-objects-in-test-automation-advantages-and-disadvantages-of-keyword-driven-tests/)
+
+[How Keyword Driven Tests fall short](/page-objects-in-test-automation-what-can-change-about-the-keyword-driven-framework/)
+
+* * *
+
+<a id="trying-to-automate-captcha" />
+
+### Trying to automate CAPTCHA
+
+> CAPTCHA, short for *Completely Automated Public Turing test to tell Computers and Humans Apart*, is explicitly designed to prevent automation, so do not try! There are two primary strategies to get around CAPTCHA checks:
+> 
+> Disable CAPTCHAs in your test environment
+> 
+> Add a hook to allow tests to bypass the CAPTCHA[https://www.selenium.dev/documentation/en/worst\_practices/captchas/](https://www.selenium.dev/documentation/en/worst_practices/captchas/)
+
+* * *
+
+<a id="gmail-email-and-facebook-logins" />
+
+### Gmail, email, and Facebook logins
+
+> … logging into sites like Gmail and Facebook using WebDriver is not recommended. Aside from being against the usage terms for these sites (where you risk having the account shut down), it is slow and unreliable.
+> 
+> The ideal practice is to use the APIs that email providers offer, or in the case of Facebook the developer tools service which exposes an API for creating test accounts, friends and so forth. Although using an API might seem like a bit of extra hard work, you will be paid back in speed, reliability, and stability. The API is also unlikely to change, whereas webpages and HTML locators change often and require you to update your test framework.[https://www.selenium.dev/documentation/en/worst\_practices/gmail\_email\_and\_facebook\_logins/](https://www.selenium.dev/documentation/en/worst_practices/gmail_email_and_facebook_logins/)
+
+* * *
+
+<a id="anti-pattern-giant-bdd-tests" />
+
+### Anti-Pattern: Giant BDD Tests
+
+The description is coming soon…
+
+However, you do not want to have large BDD tests with many “When” and “Then” because it means that you are testing too much. It means that your tests will not be atomic. See **Atomic Tests Pattern** at the top.
+
+* * *
+
+<a id="anti-pattern-imperative-bdd-tests" />
+
+### Anti-Pattern: Imperative BDD Tests
+
+> The biggest mistake BDD beginners make is writing Gherkin without a behavior-driven mindset. They often write feature files as if they are writing “traditional” *procedure-driven* functional tests: step-by-step instructions with actions and expected results. These procedure-driven tests are often *imperative* and trace a path through the system that covers multiple behaviors. As a result, they may be unnecessarily long, which can delay failure investigation, increase maintenance costs, and create confusion.
+> 
+> Automation Panda, [https://automationpanda.com/2017/01/30/bdd-101-writing-good-gherkin/](https://automationpanda.com/2017/01/30/bdd-101-writing-good-gherkin/)
+
+* * *
+
+<a id="anti-pattern-large-classes" />
+
+### Anti-Pattern: Large Classes
+
+> Every class in your test automation project should be no longer than 200 lines of code.
+> 
+> Nikolay Advolodkin
+
+Ultimately, this is a software programming problem. But developing test automation is a programming exercise, so the same concepts apply.
+
+Having small classes (less than 200 lines long) provides the following benefits:
+
+1.  Classes are more likely to follow the Single Responsibility Principle
+2.  It’s easier to understand what a class is doing. Think `GoogleHomePage` class versus `WebApplicationManager` class
+3.  As a result of the first two points, small classes are easier to maintain
+
+**What if I don’t want to have too many classes?**
+
+I believe this is a fallacy. I have never encountered anyone who complained of having too many classes or files. Even if it’s possible, it seems likely an exception, rather than the rule.
+
+* * *
+
+<a id="do-not-use-soft-assertions" />
+
+### Do not use soft assertions
+
+What is the point of an assertion that will not fail your test? If you don’t care about the outcome of that assertion, then why are you making it? And if one of your soft assertions fails, does that mean your test will fail as well?
+
+Hypothetically, there is a test that’s validating the checkout process. This test fails because it failed to locate a Contact Us link as it was stepping through the pages. This Contact Us link check was an assertion. So, is the checkout process broken or is there simply a missing link? Do we fail our UserCanCheckoutTest ? If we do, then the test is lying because the user can check out. 
+
+If you follow [atomic testing pattern](/automation-patterns-antipatterns/#atomic) for test automation, you cannot have soft assertions.
+
+* * *
+
+<a id="red-flags-avoid-these-automated-testing-practices" />
+
+## Red Flags (Avoid These Automated Testing Practices)
+
+This section is a collection of automation techniques that I have seen with my clients that cause them a lot of problems. I can’t quite classify them as “anti-patterns” because they are not widely accepted as such in the automation community, by the automation experts. However, I do believe that they are on the brink of being bad practices that you should strongly reconsider.
+
+<a id="using-pagefactory-from-selenium" />
+
+### Using PageFactory from Selenium
+
+Inspired by a [post](https://titusfortner.com/2021/02/03/page-factory-optimization.html) from Titus Fortner (maintainer of Selenium Ruby), the use of PageFactory in Selenium automation is a perverse problem that’s causing plenty of issues for engineers all over the world.
+
+> Don’t use PageFactory… It was a terrible mistake putting it \[in Selenium\], right? Because now I can’t take it out of the project.[Simon Stewart, creator of WebDriver](https://titusfortner.com/2021/02/03/page-factory-optimization.html)
+
+Page Factory suffers from at least two major concerns:
+
+-   Increasing the amount of Selenium commands. As a result, making tests slower and more brittle
+-   Leading to StaleElementException
+
+<a id="increasing-the-amount-of-selenium-commands" />
+
+#### Increasing the amount of Selenium commands
+
+Use of PageFactory with a ExpectedConditions.elementToBeClickable(), followed by a click() will result in an inefficient chain of requests.
+
+1.  Locate Element
+2.  Check if Element Displayed
+3.  Locate Element
+4.  Check if Element Enabled
+5.  Locate Element
+6.  Click Element
+
+Typically, this can actually be done with two commands. Hence, to speed up and stabilize the tests, we can use @CacheLookup.
+
+<a id="staleelementexception" />
+
+#### StaleElementException
+
+> This may seem like a great idea, but before you go and add it to each of your element definitions, beware of its primary drawback, the dreaded `StaleElementException`. Chromedriver references an element by its location in the Document Object Model (DOM). If the DOM is reloaded by refreshing the page, or it changes in such a way that the element moves positions within the DOM, Selenium will consider that element stale.Titus Fortner, [Page Factory Optimization](https://titusfortner.com/2021/02/03/page-factory-optimization.html)
+
+<a id="bdd" />
+
+### Using BDD tools for UI automation
+
+I work on a team of highly skilled solution architects. Combined we have close to 100 years of test automation experience. We have seen ONE good BDD automation implementation in our lives by Aslak Hellesoy. Hopefully, this alone makes you reconsider using BDD automation tools. If not, let’s talk about why failure is drastically magnified.
+
+It all starts with a simple question…
+
+**What is Behavior Driven Development?**
+
+> Behaviour-Driven Development (**BDD**) is a set of practices that aim to reduce some common wasteful activities in software development:
+> 
+> – Rework caused by misunderstood or vague requirements.
+> 
+> – Technical debt caused by reluctance to refactor code.
+> 
+> – Slow feedback cycles caused by silos and hand-overs
+> 
+> BDD aims to narrow the communication gaps between team members, foster better understanding of the customer and promote continuous communication with real world *examples*.
+> 
+> [https://docs.cucumber.io/bdd/overview/](https://docs.cucumber.io/bdd/overview/)
+
+Now that we understand that, let me ask…
+
+Did you see the word **tool** or **tools** used a single time?
+
+No, we didn’t.
+
+This implies that BDD is NOT a tool, it is a **set of practices**.
+
+Aslak Hellesoy, the creator of Cucumber says,
+
+> If you think Cucumber is a testing tool, please read on, because you are wrong.
+> 
+> There is a **process** to follow that involves many roles on the software team.  
+> This process is called BDD. It’s what came out of that clique I mentioned. BDD is not a tool you can download
+> 
+> [The World’s most misunderstood collaboration tool, Cucumber.io](https://cucumber.io/blog/the-worlds-most-misunderstood-collaboration-tool/)
+
+I’m fortunate in that I’m a Solutions Architect (SA) and I get to talk to dozens of new customers and hundreds of automation engineers every year.
+
+**Here’s where it gets bad:**
+
+The common problem that I encounter and my fellow SAs…
+
+is that **almost** nobody uses BDD as **a set of practices.**
+
+No practices are implemented to remove all the waste and technical debt.
+
+Instead, tools such as Cucumber, Serenity, SpecFlow are used to write automated tests and then we claim that we are “doing BDD”.
+
+**It gets worse:**
+
+The problem is that using BDD tools adds an extra layer of complexity and dependency to the test automation code.
+
+If we aren’t using the BDD process for the actual advantages then all we are doing is adding extra complexity for no benefits 🙁
+
+These are the problems that I see when a BDD tool is used for automation without actually following the BDD practices:
+
+<a id="problem-1-bdd-tools-create-more-dependencies" />
+
+#### Problem 1: BDD tools create more dependencies
+
+Let’s take a look at a diagram that shows all the dependencies that are added when using a BDD automation framework (I didn’t include all the other dependencies such as test runners and so on as they’re not related to BDD).
+
+<Figure src="/blog/automation-patterns-antipatterns/39-bdd.png" width="1914" height="250" alt="bdd" caption="bdd" />
+
+When you add a BDD tool to your automation suite, you have the BDD framework such as Cucumber used by Feature Files. Feature Files use Step Definitions and Step Definitions use Page Objects.
+
+Hold on to that thought for a second…
+
+What if you don’t use a BDD automation tool?
+
+<Figure src="/blog/automation-patterns-antipatterns/41-no-bdd.png" width="1228" height="418" alt="" caption="Without a BDD tool" />
+
+By not using a BDD tool, we can remove two extra dependencies.
+
+Dependencies in software development are almost always bad. We want to limit the number of dependencies because each one is a chance for something to go wrong.
+
+Most of the software development design patterns focus on dependency management…
+
+Think Single Responsibility Principle or Open-Closed Principle.
+
+> In software development, we strive towards having our modules doing less while limiting the number of dependencies.
+> 
+> Nikolay Advolodkin
+
+So why are we adding extra BDD tool dependencies to our automation if we aren’t using the process?
+
+**BDD tools help to create more readable code**:
+
+Yes, this is true. I would agree that a test written in good Gherkin syntax is very readable.
+
+However, is it that big of a difference when compared to a non-BDD test like this:
+
+```csharp
+[Test]
+public void ShouldNotBeAbleToLoginWithLockedOutUser()
+{
+    _loginPage.Open();
+    //Although I would likely never test a login through the UI. This is just a small example
+    var productsPage = _loginPage.Login("locked_out_user", "secret_sauce");
+    productsPage.IsLoaded.Should().BeFalse("we used a locked out user who should not be able to login.");
+}
+```
+
+I don’t believe it’s that drastic of a difference.
+
+Is it worth it to take the risk of extra dependency management for slightly more readable tests?
+
+**It gets worse:**
+
+The other problem that seems to happen with the majority of the BDD tests is that they don’t follow actual BDD best practices.
+
+<a id="problem-2-bdd-is-being-done-by-the-wrong-team" />
+
+#### Problem 2: BDD is being done by the wrong team!
+
+I recently read an [interesting article](https://theitriskmanager.com/2019/04/06/the-tragedy-of-given-when-then/) that pointed out another problem of using BDD Tools for automation. As most organizations currently do BDD, it’s the automation engineers that are simply converting manual tests to BDD tests, right?
+
+What that ultimately means is that the completely wrong team is writing BDD.
+
+The developers who are designing the code aren’t writing the test specifications. Even though they are most familiar with the system.
+
+The BAs aren’t writing the specifications either because they view BDD as an automation tool. Even though the BAs are the ones that are the closest to the client.
+
+**It gets worse:**
+
+The BDD specs are being written by the isolated team that rarely communicates with the client and doesn’t have an intimate knowledge of the system being tested.
+
+**How does that make any sense?**
+
+<a id="problem-3-bdd-tools-struggle-with-parallelization" />
+
+#### Problem 3: BDD tools struggle with parallelization
+
+As far as I’ve seen with BDD automation frameworks such as Cucumber or SpecFlow, parallelization with them is a problem.
+
+You can only parallelize at the Feature File level. This means that you can only run as many tests in parallel as you have feature files. This is a major problem if you are trying to scale your test automation.
+
+**Here’s the secret:**
+
+If you can’t run in parallel, you can’t scale. Hence, you can’t get fast enough feedback. As a result, your automation program will **fail**, I can guarantee that.
+
+<a id="problem-4-poor-gherkin-is-coded" />
+
+#### Problem 4: Poor Gherkin is coded
+
+Let me start by saying that I’m NOT a BDD expert by any means. In my career, I have written about ten BDD tests in my life. All in an attempt to help other teams understand how a correct BDD implementation should look. And I don’t plan on ever writing a production BDD test since I find it an unnecessary burden for little gain.
+
+However, I read the documentation as I work with 100s of automation engineers every single year to resolve the problems that they encounter with BDD. So my Gherkin may not be perfect, but if you doubt my ideas, check the resources for yourself 😉
+
+Here are some examples that I have seen in real life (This example is from Karate framework that also uses the BDD syntax):
+
+Here’s another one from a real customer… 😨😨😨☠
+
+```csharp
+Scenario Outline: Registration - Successful - eshop products
+    Given I navigate to "<url>"
+    And I should see page title having partial text as "Login"
+    When User clicks on "jointoday"
+    Then I should see the "Choose your package" message
+    And User selects "<packagecountry>" option
+    And I should see page title having partial text as "Package Selection | Registration"
+    And I wait for 5 sec
+    When User forcefully click on "Continue"
+    #registration - medical check
+    Then I should see page title having partial text as "Medical Check | Registration"
+    And User provided following "first name,last name,dob month,dob day,dob year" input data
+    And User forcefully click on "gender male"
+    And User selects no information options
+    And User forcefully click on "kilograms label"
+    And User provided following "current weight,height" input data
+    When User forcefully click on "Continue"
+    #registration - personal details
+    Then I should see page title having partial text as "Personal Details | Registration"
+    And User enters "reg email address" into "reg email address" field
+    And User enters "reg email address" into "reg confirm email address" field
+    And User enters "reg password" into "reg password" field
+    And User enters "reg password" into "reg reconfirm password" field
+    And I select "<securityquestion>" optionby "text" from dropdown "securityquestion"
+    Then User enters "billingaddresscity" into "securityanswer" field
+    And User selects all check boxes
+    When User forcefully click on "Continue"
+    #registration - summary
+    Then I should see page title having partial text as "Summary | Registration"
+    And User forcefully click on "Enter address manually"
+    And User provided following "billing address Line1,billing address city,billing address country" input data
+    And User enters "<billingaddresspostcode>" into "billing address postcode" field
+    And I select "<state>" optionby "text" from dropdown "billing address state"
+    And User enters "<contactnumber>" into "billing address contact number" field
+    And I select "<irelandstate>" optionby "text" from dropdown "billingaddressirstate"
+    And User selects all check boxes
+    When User forcefully click on "continue to payment"
+    #registration - payment
+    Then I wait for 3 sec
+    And I should see the "payment method heading" message
+    And I should see page title having partial text as "Choose your Payment Method"
+    And User provided following "cc number,cc holder name,cc cvv code" input data
+    And I select "cc expiry month" optionby "value" from dropdown "cc expiry month"
+    And I select "cc expiry year" optionby "value" from dropdown "cc expiry year"
+    When User forcefully click on "Complete Payment"
+    #registration - successful
+    Then I wait for 5 sec
+    And I should see the "payment successful" message
+    And I should see page title having partial text as "Finished | Registration"
+    #profilesetup - choose account details
+    Given User sets headers and navigates to "ukbypassauthentation"
+    Then I should see page title having partial text as "Personal Details | Profile Builder”
+    And User enters "choose a username" into "username" field
+    And I select "skip" optionby "value" from dropdown "time zone"
+    When User forcefully click on "Continue"
+    #profilesetup - target weight
+    Then I should see the "choose your target weight" message
+    And I should see page title having partial text as "Target Weight | Profile Builder"
+    And User enters "target weight" into "target weight" field
+    When User forcefully click on "Continue"
+    And I wait for 5 sec
+    #profilesetup - your health
+    Then I should see the "your health" message
+    And I should see page title having partial text as "Medical Check | Profile Builder"
+    And User forcefully click on "donthaveanyofthehealthconditions"
+    When User forcefully click on "Continue"
+    #profilesetup - your dietary preferences
+    Then I should see the "your dietary preferences" message
+    And I should see page title having partial text as "Dietary Requirements | Profile Builder"
+    Then User forcefully click on "donthaveanyofthedietarypreferences"
+    And User forcefully click on "Continue"
+    Then I should see the "your journey with us starts here" message
+    And I should see page title having partial text as "Quick Start"
+    And I should see the "Close" message
+    And User forcefully click on "Close"
+    #shop
+    Given User sets headers and navigates to "shopurl"
+    Then I wait for 5 sec
+    And User clicks on "<shopurl>"
+    And I should see page title having partial text as "Shop"
+    Then I wait until home page load
+    And User adds "<icount>" items of "same" boxes "<boxtoadd>" to basket
+    And User forcefully click on "basketcheckout"
+    And I wait for 5 sec
+    Then I should see the "check out header" message
+    And I wait for 5 sec
+    Then User completes the payment either by one click payment method or using new card method
+    #shop - confirmation
+    And I wait for 5 sec
+    And I should see the "congratulations" message
+    And I should see page title having partial text as "Homepage"
+    Examples:
+      | url   | state   | billingaddresspostcode   | shopurl | icount | boxtoadd    | contactnumber                  | packagecountry | securityquestion | irelandstate |
+      | ukurl | ukstate | ukbillingaddresspostcode | skip    | 5      | biscuit       | irbillingaddresscontactnumber  | UK             | cityborn         | skip         |
+      | ukurl | eustate | eubillingaddresspostcode | skip    | 10     | biscuit       | irbillingaddresscontactnumber  | Europe         | cityborn         | irstate      |
+```
+
+The purpose of **Behavior** Driven Development scenarios is to document end-user behavior. User’s don’t come to our page to send keys, click buttons and synchronize on elements. Users come to our pages to login or book a hotel or check a reservation.
+
+The danger in exposing UI interactions in the BDD tests is that any time any UI flow changes, you must update all tests to reflect that change. For example, if today your login doesn’t have a captcha, but tomorrow it does.
+
+Even more dangerous are the exposed sleeps. Locally, 10 sec may be enough. In a cloud grid, it will not. Now every test that uses that functionality needs to be updated to wait longer. If this was in a single step of a page object, we would just need to update a single place.
+
+<a id="problem-5-unnecessary-overhead" />
+
+#### Problem 5: Unnecessary Overhead
+
+Every technology brings overhead with it because you need to learn and answer some of the following questions:
+
+-   How does it work?
+-   What are the best practices?
+-   How do I use it?
+-   How do I install it?
+-   …
+
+Here’s a real example of some of the rules that you will need to learn if you want to do BDD correctly (there are many more than this):
+
+> Write all steps in third-person point of view
+> 
+> Write steps as a subject-predicate action phrase
+> 
+> Given-When-Then steps must appear in order and cannot repeat
+> 
+> …
+
+The most important question that we need to ask ourselves is
+
+**Why are we trying to answer all of these questions? What is the problem that we are actually trying to solve?**
+
+For slightly better readability… Because our boss told us so…
+
+**Those don’t seem like valid reasons to spend extra time mastering another tool.**
+
+* * *
+
+<a id="retries" />
+
+### Avoid Retrying Failed Tests
+
+In most cases retry logic to rerun failed tests should not exist in test automation code. It’s a dangerous pattern for the following reasons.
+
+First, retry logic in test code immediately implies that you don’t trust your test automation code!
+
+You are telling yourself, your team, and the organization that my tests sometimes pass and sometimes fail. You don’t know why. So you just rerun them until they pass.
+
+What this also means is that if they fail, your default assumption is that it’s not a bug in the application, but instability in your test automation.[Retry logic in test automation, implies that your #automation isn’t trustworthy. The default behavior is to rerun a failed test rather than explore the failure. If the test isn’t capable of finding a regression, what’s the value of the test?**CLICK TO TWEET**](https://twitter.com/share?text=Retry+logic+in+test+automation%2C+implies+that+your+%23automation+isn%27t+trustworthy.+The+default+behavior+is+to+rerun+a+failed+test+rather+than+explore+the+failure.+If+the+test+isn%27t+capable+of+finding+a+regression%2C+what%27s+the+value+of+the+test%3F&via=Nikolay_a00&url=https://ultimateqa.staging.wpmudev.host/automation-patterns-antipatterns/?utm_source=twitter&utm_medium=Social&utm_campaign=SocialWarfare)
+
+**It gets worse:**
+
+The second and much more sinister problem is that you may cover up real 🐛
+
+I once worked on a project where on random occasions I had an automated UI test that would fail. The behavior was so sporadic and unpredictable that it just didn’t make any sense.
+
+And it was so infrequent that I couldn’t detect a good pattern.
+
+I sat down with a developer and our DevOps engineer and after some time troubleshooting, we figured out the root cause.
+
+The problem was that we had a load balancer and a bunch of servers behind it.
+
+One of the 12 servers was corrupt. And under specific conditions, the automated scenario would be routed to this server.
+
+In this case, the scenario would fail because the functionality on that server was broken.
+
+Our load balancer handled 1000s of web requests per second. This means that potentially a 12th of those requests were failing due to the bug in the software.
+
+If I had added a retry logic to this test, I would have covered up this bug and the company would be losing a lot of money. Potentially 10s of thousands of dollars/month would be my estimate.
+
+This type of error is something that engineers get fired for. When we claim that we have coverage and the risk is mitigated.
+
+When in fact, it’s not.
+
+Hence, this is why we don’t want to have retry logic in our test framework design.
+
+**However, if the root cause of the failure is 100% clear, and it’s out of our control, retry logic may be an acceptable solution.** 
+
+Here’s an example:
+
+<Figure src="/blog/automation-patterns-antipatterns/43-Screen-Shot-2021-06-11-at-3-02-48-PM.png" width="734" height="869" alt="" caption="iPhone 12.1 doesn’t connect to the internet" />
+
+This test failed because, ” An element could not be located on the page using the given search parameters.”. After root cause analysis, it’s clear that the reason for the failure was because of the iPhone failure. For whatever reason it wasn’t able to connect to the internet. This test is using a 3rd party service provider for it’s device farm.
+
+We can add retry logic to this test and have it rerun on a failure. I find this to be an acceptable solution, especially for mobile automation.
+
+Also, we can try to find a cloud provider that isn’t as flaky in its infrastructure. This option is drastically more difficult and unreasonable in this situation.
+
+# What do you think?
+
+What do you think about these automated testing best practices? Have you encountered any of these problems?
+
+* * *
+
+## Find out how our clients are running automation 66% faster!   Get your Free framework assessment.
+
+[**See if you qualify**](https://forms.clickup.com/2314027/f/26ktb-6387/56LKNUZ9BDYXSC73SY)
+
+ℹ️ We have limited space for only 1 assessment per quarter.
+
+* * *

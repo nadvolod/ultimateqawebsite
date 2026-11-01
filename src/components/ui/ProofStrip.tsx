@@ -1,7 +1,8 @@
 const STATS = [
-  { value: '3.5M+', label: 'Learners' },
-  { value: '200+', label: 'Companies Served' },
-  { value: '900 Min/Day', label: 'Saved' },
+  // Only results from published case studies; see src/data/caseStudies.ts
+  { value: '25x', label: 'Faster Mobile Testing' },
+  { value: '8 Hrs/Day', label: 'Manual Testing Saved' },
+  { value: '300+', label: 'Published Guides' },
   { value: 'Since 2015', label: 'Engineering Excellence' },
 ]
 

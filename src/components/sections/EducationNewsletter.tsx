@@ -49,7 +49,7 @@ export function EducationNewsletter() {
         <FadeInView>
           <SectionHeader
             eyebrow="Learn & Stay Informed"
-            title="3.5M learners can't be wrong"
+            title="Learn from 300+ free guides"
             subtitle="Whether you're starting your automation journey or staying sharp on AI — we've built the resources."
           />
         </FadeInView>

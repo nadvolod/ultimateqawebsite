@@ -15,18 +15,9 @@ export function SocialProof() {
           />
         </FadeInView>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {CASE_STUDIES.slice(0, 3).map((study, i) => (
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {CASE_STUDIES.map((study, i) => (
             <FadeInView key={study.id} delay={i * 0.1}>
-              <CaseSnippet caseStudy={study} />
-            </FadeInView>
-          ))}
-        </div>
-
-        {/* Second row — 2 centered */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[calc(66.67%+12px)] mx-auto">
-          {CASE_STUDIES.slice(3).map((study, i) => (
-            <FadeInView key={study.id} delay={(i + 3) * 0.1}>
               <CaseSnippet caseStudy={study} />
             </FadeInView>
           ))}

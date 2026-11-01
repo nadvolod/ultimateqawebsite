@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -7,6 +7,13 @@ import { Footer } from '@/components/layout/Footer'
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+})
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-display',
+  weight: ['500', '700', '800'],
   display: 'swap',
 })
 
@@ -19,7 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'UltimateQA — High-Quality Websites & Agentic AI Systems',
   description:
-    'We design AI-powered systems and high-quality websites that scale with your ambition — built on a decade of engineering excellence. 3.5M+ learners, 200+ companies served.',
+    'We design AI-powered systems and high-quality websites that scale with your ambition — built on a decade of engineering excellence.',
   metadataBase: new URL('https://ultimateqa.com'),
   openGraph: {
     title: 'UltimateQA — High-Quality Websites & Agentic AI Systems',
@@ -50,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans">
         <Header />
         <main>{children}</main>
