@@ -1,8 +1,11 @@
 import type { Cta, CtaId, OfferId, PostFrontmatter } from '@/types'
 import { getTopic } from '@/data/topics'
 
-// TODO: replace with the real Substack publication URL before launch
-export const SUBSTACK_URL = 'https://ultimateqa.substack.com'
+/**
+ * The beehiiv publication's public URL, e.g. https://ultimateqa.beehiiv.com.
+ * Unset until the publication exists; newsletter forms render nothing without it.
+ */
+export const NEWSLETTER_URL = process.env.NEXT_PUBLIC_BEEHIIV_URL ?? ''
 
 /** Consulting lives on the Legacy Site until /consulting/ is migrated; the path stays the same after Cutover. */
 const CONSULTING_URL = 'https://ultimateqa.com/consulting/'
@@ -40,7 +43,7 @@ export const CTAS: Record<CtaId, Cta> = {
     headline: 'One AI idea for your business, every week',
     pitch: 'Short, practical, and something you can try before Friday. Unsubscribe whenever you like.',
     action: 'Subscribe',
-    href: SUBSTACK_URL,
+    href: NEWSLETTER_URL,
   },
 }
 

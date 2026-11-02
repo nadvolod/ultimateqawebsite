@@ -200,7 +200,7 @@ export function Magazine({ entries, library }: MagazineProps) {
         <div className="flex flex-col rounded-[20px] border-[1.5px] border-uqa-line p-8 sm:p-10">
           <h2 className="font-display text-2xl font-bold text-uqa-ink">Looking for the technical articles?</h2>
           <p className="mt-3 text-[17px] leading-relaxed text-uqa-slate">
-            300+ guides on test automation, Selenium and engineering, written for developers and QA teams, now live in their own library.
+            Our guides on test automation, Selenium and engineering, written for developers and QA teams, have their own library.
           </p>
           <Link href="/library/" className="mt-auto pt-6 font-semibold text-uqa-deep-blue hover:text-uqa-purple">
             Open the engineering library

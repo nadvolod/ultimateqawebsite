@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:practice": "tsx scripts/check-practice-pages.ts",
+    "prebuild": "npm run check:practice"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",

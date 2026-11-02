@@ -2,9 +2,11 @@ import { useId } from 'react'
 import type { Cta } from '@/types'
 import { cn } from '@/lib/utils'
 
-/** Posts straight to Substack's subscribe page (email prefilled): no embed script, no form backend. */
+/** Posts straight to beehiiv's hosted subscribe page (email prefilled): no embed script, no form backend. */
 export function NewsletterForm({ cta, variant = 'light' }: { cta: Cta; variant?: 'dark' | 'light' }) {
   const id = useId()
+  // no publication yet: show nothing rather than a form that leads nowhere
+  if (!cta.href) return null
   const dark = variant === 'dark'
   return (
     <section
