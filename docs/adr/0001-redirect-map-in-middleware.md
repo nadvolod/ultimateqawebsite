@@ -1,0 +1,3 @@
+# Legacy URL redirects live in one JSON map served by middleware
+
+Retiring the Legacy Site produces 1,500+ redirects (about 1,000 attachment pages, 410 tags, 49 categories, plus every Retired and Merged Post), which is close to Vercel's 2,048-entry cap for config-file redirects, and long config lists slow down every request. We keep the whole Redirect Map in a single JSON file in the repo, with wildcard rules for whole URL families such as `/tag/*`, and look it up in one Next.js middleware, so there is one place to edit, it can be tested against the full list of Legacy URLs, and it doesn't grow slower as more redirects are added.

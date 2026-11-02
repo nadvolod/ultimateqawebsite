@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import typography from '@tailwindcss/typography'
 
 const config: Config = {
   content: [
@@ -17,9 +18,15 @@ const config: Config = {
         'uqa-gray-mid': '#797979',
         'uqa-gray-light': '#dbdbdb',
         'uqa-gray-bg': '#fafafa',
+        // magazine palette for the Blog and Engineering Library
+        'uqa-ink': '#0b1b3f',
+        'uqa-slate': '#4a5160',
+        'uqa-mist': '#f3f5fb',
+        'uqa-line': '#e6e8ef',
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Bricolage Grotesque', 'system-ui', 'sans-serif'],
         mono: ['var(--font-jetbrains-mono)', 'JetBrains Mono', 'monospace'],
       },
       keyframes: {
@@ -50,7 +57,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [typography],
 }
 
 export default config

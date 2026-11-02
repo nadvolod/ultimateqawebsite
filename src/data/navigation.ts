@@ -3,7 +3,7 @@ import type { NavItem } from '@/types'
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Projects',     href: 'https://ultimateqaportfolio.vercel.app/',              external: true },
   { label: 'Case Studies', href: 'https://ultimateqa.com/case-studies/',                 external: true },
-  { label: 'Blog',         href: 'https://ultimateqa.com/blog/',                         external: true },
+  { label: 'Blog',         href: '/blog/' },
   { label: 'Newsletter',   href: 'https://ultimateqa.ck.page/profile',                   external: true },
   {
     label: 'Education',

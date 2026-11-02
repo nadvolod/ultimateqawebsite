@@ -1,0 +1,15 @@
+{
+  "automation": "284:d17abd371139165ef53bf74f6b77939341ee0c944f51079c38cb2cd435bf8330",
+  "fake-pricing-page": "418:92c99296c85a7875725ad87933697360239da82174644904fecbef915c002aaf",
+  "complicated-page": "550:4a2bde57e3bbd834cc47721c0c8d4c34cf3d7906120b8c7e8cf210a8ddfa345d",
+  "fake-landing-page": "559:34833c42455faf1ea414b88b097cebd6b10ed8cc1a746e826b9bc4e05daeba15",
+  "fake-landing-page-small": "340:2e925659fefb2fad0e614e786b0db16a2db4507457bac57b3cf2104d02d3c407",
+  "filling-out-forms": "279:d3c4960c6fd8593e1eeaac6a93f101dc1f94f3a286e10f93f2222cea9f6aa20c",
+  "simple-html-elements-for-automation": "498:eee283f3b5fd5f238ef9de3dc52addd67178361a93b75d731e6751f4607664c6",
+  "sample-application-lifecycle-sprint-1": "253:239220ee33e9a87425056ea8b2be172065a2283b628e0c5b8f1fb2ba7accc69c",
+  "sample-application-lifecycle-sprint-2": "254:ba5e44600e71aec267ca38d681ec447d4e18ac0295b9e0a5ab8c80a3f662011d",
+  "sample-application-lifecycle-sprint-3": "273:2fd6a287912ee96dc05a69b228a9dd6d7dc35b3e1d232c6440ebe9bc7af0f4c0",
+  "sample-application-lifecycle-sprint-4": "277:fefc4309c8c621385634d9cd0bf657d17d3bcf79dc4fdcd81943a53a548ed918",
+  "sample-application-lifecycle-sprint-5": "273:7881eca4870a0131b86fc3629b6bdd8ebac471165fad2b2cc559af9418b8b013",
+  "sample-application-lifecycle-form-page-2": "253:276afdfffcca1b5e72b5bcac18b42005b416d099380ffbf0fe52489bee4725e2"
+}

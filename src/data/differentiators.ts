@@ -20,21 +20,21 @@ export const DIFFERENTIATORS: Differentiator[] = [
     icon: '⚡',
     title: 'Performance Obsessed',
     description:
-      'Lighthouse 95+ isn\'t a goal, it\'s the floor. We instrument Core Web Vitals from day one and optimize relentlessly — because milliseconds directly impact conversion.',
+      'We measure Core Web Vitals from day one and keep optimizing, because a slow page costs you customers.',
   },
   {
     id: 'decade-of-excellence',
     icon: '🏆',
     title: 'A Decade of Excellence',
     description:
-      'Since 2015, we\'ve educated 3.5M+ learners and delivered for 200+ companies. That track record means we\'ve seen every failure mode — and know how to avoid them.',
+      'Since 2015 we\'ve published 300+ guides on building and testing software. That experience means we\'ve seen the common failure modes, and know how to avoid them.',
   },
   {
     id: 'production-reliability',
     icon: '🛡️',
     title: 'Production-Grade Reliability',
     description:
-      'We build for 99.98% uptime, not demo-day demos. Observability, error boundaries, fallback strategies, and runbooks are part of every delivery.',
+      'We build for production, not demo day. Monitoring, error handling, fallbacks and runbooks are part of every delivery.',
   },
   {
     id: 'full-ownership',

@@ -12,8 +12,8 @@ export function FeaturedWork() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-16">
             <SectionHeader
               eyebrow="Featured Work"
-              title="Projects that move the needle"
-              subtitle="A sample of systems and sites we've built — each measured by business impact, not just technical specs."
+              title="Projects we've built"
+              subtitle="A sample of the AI systems and websites we've built."
               align="left"
               dark
             />

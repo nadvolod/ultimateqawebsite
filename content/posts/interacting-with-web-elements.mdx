@@ -1,0 +1,293 @@
+---
+title: "Interacting with Web Elements"
+description: "Learn how to actually interact with our web elements so we can perform actions on them after we locate them."
+seoTitle: "Interacting with Web Elements - Ultimate QA"
+date: "2021-03-23T13:00:00Z"
+modified: "2021-03-07T20:35:36Z"
+topic: "selenium"
+legacyId: 216625
+legacyCategories: ["programming-languages","selenium-webdriver"]
+---
+
+Welcome to the third article of the Java Selenium series. In this article, we’re going to learn how to actually interact with our web elements so we can perform actions on them after we locate them.
+
+### We will learn how to:
+
+1.  Take basic actions on elements
+2.  Get information from elements and advanced element actions.
+3.  Learn advanced browser actions such as executing JavaScript, handling cookies, managing files, handling windows frames
+4.  Work with alerts. 
+
+Let’s get started!
+
+## Element interactions
+
+To interact with an element first you have to find the element, which is exactly what we discussed in the last article. After we find the element, we can then interact with it with one of the Selenium WebDriver methods, such as the click() method, which you have already see. 
+
+This is called Find and Act, because the first action locates the element and then this one actually interacts with the element:
+
+driver.findElement(By.id(“sign-in”)).click();
+
+And this is called Find, Store and Act, because we find the element and we store it inside of a variable. Then we use that variable to interact with the element. 
+
+WebElement sigIn = driver.findElement(By.id(“sign-in”));
+
+signIn.click();
+
+This is usually the preferred method.
+
+Here are some of the methods that you can use to interact with an element:
+
+```csharp title="webElementInteractions.cs"
+driver.findElement(By.id(“sign-in”)).click();
+
+driver.findElement(By.id(“session_email”)).click();
+
+WebElement email = driver.findElement(By.id(“session_email”));
+email.sendKeys("sauce@example.com");
+
+WebElement email = driver.findElement(By.id(“session_password”));
+email.sendKeys("password");
+
+driver.findElement(By.tagName(“form”)).submit();
+```
+
+– click(), which is just simply a click on an element
+
+– clear() method that you can use to clear existing text in a field before typing in your own text
+
+– sendKeys, which will allow you to send a string of keys into a specific element
+
+– submit() – submitting on an element means you can submit a form
+
+## Get element information
+
+What if we want to get back information from our elements to decide what action we want to take afterward? There are several methods for getting back various types of information
+
+-   getText(), which will provide the text of the element
+-   getTagName(), which will tell you what is the tag name of the element
+-   getAttribute(), which is extremely useful for potentially deciding what the state of an element is. For example, you may be interacting with a react application or an angular application, which use attributes a lot. Using the getAttribute() method, you can check if the element has an attribute with a flag such as true or false, and then you can use that attribute to decide whether the element is in the correct state. 
+-   isDisplayed() method will tell you whether the element is displayed 
+-   isEnabled(), which returns true if the element is enabled and false if it’s disabled. 
+
+Be careful with these two methods, because they may not always work, depending on how the HTML is implemented. So it’s important whenever using these methods to make sure that when you use them that they actually tell you the correct state of the element. Most of the times they will work, but sometimes they may not. 
+
+## Keyboard actions
+
+Let’s talk about some advanced element actions. Advanced element actions involve mouse and keyboard interactions to perform actions like hovering and using key combinations. They look like this:
+
+```csharp title="KeyboardActionsExample.cs"
+WebElement element = driver.findElement(By.id("sign-in"));
+Actions action = new Actions(driver);
+action.click(Element).build().perform();
+```
+
+First, you need to locate the element that you want to interact with, and store it in a varioable. Then we do advanced element interactions using the Actions class from Selenium WebDrive. 
+
+In the above example, we’re using the action to click an element. This is the same as our mouse click, but we’re using the actions API. Until you use the perform() method, the action will not actually occur. 
+
+### Here are some of the major mouse actions that you can do on a web element:
+
+```csharp title="MouseActions.cs"
+// Clicks in the middle of the given element.
+click(WebElement target);
+// Clicks (without releasing) at the current mouse location.
+clickAndHold(WebElement target);
+// Performs a context-click at middle of the given element. First performs a mouseMove to the location of the element.
+contextClick(WebElement target);
+// Performs a double-click at middle of the given element.
+doubleClick(WebElement target);
+// A convenience method that performs click-and-hold at the location of the source element,
+// moves to the location of the target element, then releases the mouse.
+dragAndDrop(WebElement source, WebElement target);
+// A convenience method that performs click-and-hold at the location of the source element,
+// moves by a given offset, then releases the mouse.
+dragAndDrop(WebElement source, int xOffset, int yOffset);
+// Moves the mouse to the middle of the element.
+moveToElement(WebElement target);
+// Moves the mouse to an offset from the top-left corner of the element.
+moveToElement(WebElement source, int xOffset, int yOffset);
+// Releases the depressed left mouse button at the current mouse location.
+release();
+```
+
+There are also keyboard interactions which are extremely helpful if, for example, you cannot interact with an element using standard keyboard commands:
+
+```csharp title="KeyboardActions.cs"
+// Performs a modified key press.
+keyDown(java.lang.CharSequence key);
+// Performs a modified key release.
+keyUp(java.lang.CharSequence key);
+// Sends keys to the active element.
+sendKeys(java.lang.CharSequence key);
+```
+
+I do really want to caution you that keyboard commands can be very flaky and should be used as a last resort in your test automation. However, there are situations where you cannot use regular mouse actions, and so keyboard commands come in very handy. 
+
+Here are some more useful examples of advanced actions:
+
+```csharp title="AdvancedActionsSeleniumJava.cs"
+// hover
+action.moveToElement(element).build().perform();
+// drag and drop
+action.dragAndDrop(element, element2).build().perform();
+// click-pause-release
+action.clickAndHold(element).pause(100).release().build().perform);
+```
+
+## JavaScript executor
+
+The JavaScript executor is an interface from Selenium WebDriver that allows us to actually run JavaScript code on the client-side. JavaScript code is extremely useful to run in the browser because it allows us many different types of operations that are not natively available through the Selenium WebDriver API:
+
+```csharp title="JavaScriptExecutorExample.cs"
+JavaScriptExecutor js = (JavaScriptExecutor) driver;
+js.executeScript("alert('Hello World!')");
+```
+
+In this example, you can see we’re passing in a string, which is actually JavaScript code. This string will actually pop up an alert on our browser.
+
+You can check out this [post](/7-extremely-useful-selenium-javascript-commands/) for some of the most useful JavaScript commands in Selenium WebDriver.
+
+## Windows
+
+Let’s talk about windows and frames, because they are more challenging. Here’s an example of a code that works with windows:
+
+```csharp title="windowFrames.cs"
+    @Test
+    public void windowFrames() {
+        driver.navigate().to("https://the-internet.herokuapp.com/windows");
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript(("window.open('https://the-internet.herokuapp.com/windows/new')"));
+
+        String originalWindow = driver.getWindowHandle();
+        Set handles = driver.getWindowHandles();
+        handles.remove(originalWindow);
+
+        String nextWindow = String.valueOf(handles.iterator().next());
+
+        driver.switchTo().window(nextWindow);
+        Assert.assertEquals("New Window", driver.getTitle());
+
+        driver.close();
+        driver.switchTo().window(originalWindow);
+        Assert.assertEquals("The Internet", driver.getTitle());
+    }
+```
+
+Let’s step through this code so that you can see exactly what’s going on. The first line just navigates to the URL. Next, just to practice more with JavaScript executors, we are creating a  JavaScript executor, to open a window with a new URL. This will open a brand new tab, which is also known as a window in Selenium. 
+
+Next, we are using the getWindowHandle() method. What this method does is provide the unique ID of the current window. This means that we haven’t switched to any new windows yet. Then, we call getWindowHandles(), which will get all the currently open tabs. Using this handles object, we can remove the original window from the set. Then, with the iterator().next() method, we will retrieve the string for the second window. At this point, we can switch to the second window. That’s simply done with the witchTo().window() method.
+
+Now, to check that we actually have the correct tab, we can make an assert that compares the page title with the title we expect to have.
+
+Using, driver.close(), we can close the window that is currently focused, then switch to our original window. Now that the original window has the focus again, we should now get the title and verify that the correct window remained open.
+
+## Frames
+
+Frames are pesky little guys, because they can throw any automation engineer into confusion when an easy-to-find element is actually not found. Frames are ultimately like embedding one HTML page inside of another HTML page. And if you don’t switch into the appropriate frame, you’ll get a NoSuchElementException, like you’re not on the correct page.
+
+To get a better idea, bavigate to [https://the-internet.herokuapp.com/nested\_frames](https://the-internet.herokuapp.com/nested_frames) and open the Developer Tools:
+
+{/* missing image: https://lh3.googleusercontent.com/wcrzpNth67HDP28H330eixi4hOeXqSpbpmHYDcXrJzwEUFtndlVV47fAJCKX0QLG9ab_vt2CKxDCPjJLaCET-k3sS5W8IudmC9TmbxH4BIc546WTLWMpHwHux2tzPLbzG9Ay6YPZ */}
+
+Let’s see how the code for working with these frames looks:
+
+```csharp title="Frames.cs"
+    @Test
+    public void frames() {
+        driver.navigate().to("https://the-internet.herokuapp.com/nested_frames");
+        WebElement defaultFrame = driver.findElement(By.name("frame-top"));
+        driver.switchTo().frame(1);
+        Assert.assertEquals("BOTTOM", driver.findElement(By.tagName("body")).getText());
+        
+        driver.switchTo().parentFrame();
+        driver.switchTo().frame("frame-top");
+        driver.switchTo().frame("frame-left");
+        Assert.assertEquals("LEFT", driver.findElement(By.tagName("body")).getText());
+        
+        driver.switchTo().defaultContent();
+        Assert.assertTrue(driver.findElement(By.name("frame-top")).getSize().height>0);
+    }
+```
+
+So the very first line is going to navigate to the URL. We have several ways we can switch to different frames. One of them is by switching by index. In our case, because we are currently at the top-level frame, we can only see two frames. This means we can either switch to index 0 or to index 1. Then, performing an assertion on this element, looking by the body, it should return “BOTTOM” because we are currently focused on the bottom frame. Then, we can switch to the parent frame, using the switchTo().parentFrame() method. This will simply move the focus to the top-level frame
+
+Another way to switch frames is by simply passing their name. The next line of code will take us to the top frame. And the one right after will take us to the left frame. And now we can only interact with the elements inside this frame. 
+
+We can also use switchTo().defaultContent(), which will take us to the very top of the HTML. 
+
+## Alerts
+
+Next, let’s see how to handle alerts in Selenium WebDriver. We’ll use this [page](https://the-internet.herokuapp.com/javascript_alerts) for our examples. This page has multiple alerts we can open and interact with, for example:
+
+{/* missing image: https://lh5.googleusercontent.com/r0RXMMDo1dIcXzOB9ffcsMtwBjzY8QveKpZl-xTHJx9aHosIfBrHYcix65_muMnCT0TFAir1xuublF2zBknw2MdA8HBt-0Ef38JJIdwCbjT4Tie6OW7nEPpBz1EneF5fJMGGhZ-U */}
+
+Here’s how the code to test the page looks like:
+
+```csharp title="Alerts.cs"
+    @Test
+    public void alerts() {
+        driver.get("https://the-internet.herokuapp.com/javascript_alerts");
+
+        driver.findElement(By.xPath("//*[contains(normalize-space(text()), 'Click for JS Alert')]")).click();
+        driver.switchTo().alert().accept();
+
+        driver.findElement(By.xPath("//*[contains(normalize-space(text()), 'Click for JS Prompt')]")).click();
+        Alert inputAlert = driver.switchTo().alert();
+        String text = inputAlert.getText();
+        inputAlert.sendKeys("Look Mom! I can automate alerts :) ");
+        inputAlert.accept();
+    }
+```
+
+We start by navigating to the webpage and clicking on the first button, for which we’re using the XPath. This will open up a JavaScript alert, which has a Cancel button and an OK button. In our case, we want to press OK. 
+
+To do this, we need to switch to the alert, using the switchTo().alert() method, and then accept it, with the accept() command.
+
+Next, we open the JavaScript prompt that will allow us to input text. Again, we click the button that opens the prompt:
+
+{/* missing image: https://lh5.googleusercontent.com/6RJO-WdXbwCqFxl8YJ9XDnrRZyhpmB1z-WssNhjjpdToof34Da0LFZ9NELnaJw2QS9n4o0dcduDc65L_3AIghHsy30Q1l1Q-w0NO8QAhXaY3McJIxLLElIi1DN-1szpWv93sHQEk */}
+
+We can see looks as such and you can see it has input text and it has two buttons. An important thing to note is that we can store the JavaScript alerts into alert objects, which is what we did with this line of code:
+
+Alert inputAlert = driver.switchTo().alert();
+
+And now we can just use this alert object to perform multiple operations, such as getting the text and inputting text.
+
+## Cookies
+
+Cookies are very important, especially in terms of logging in or setting user preferences. We can you use cookies in several ways in Selenium WebDriver. For example, we can use a cookie builder to build up a cookie that we want to set. To drop an authentication cookie to login as a user, we can build it up like this by giving it a name and a value: 
+
+```csharp title="CookieBuilder.cs"
+@Test
+public void cIsForCookie() {
+  driver.get("http://example.com");
+  
+  Cookie cookie = new Cookie.Builder("name", "value")
+    .domain("example.com")
+    .expiresOn(new Date(2025,10,31))
+    .isHttpOnly(true)
+    .isSecure(false)
+    .path("/myPath")
+    .build();
+  
+  driver.manage().addCookie(cookie);
+  
+  driver.get("http://example.com/mypath");
+  
+  Cookie found = driver.manage().getCookieNamed("name");
+  
+  assertEquals("value", found.getValue());
+  driver.manage().deleteAllCookies();
+  
+  assertFalse(driver.manage().getCookies().contains(found));
+}
+```
+
+Once we have it, we can add the cookie to the browser using the add cookie method. If we want to make sure that we have a cooking the browser, we can use the getCookieNamed() method and provide the name of the cookie. 
+
+And if we want to assert that we got the correct cookie, we simply use the getValue() method. This will let us know whether the cookie we have set is the correct cookie or not. And of course, if you want to delete all the cookies in the browser, you can do it with the deleteAllCookies() command.
+
+## Conclusions
+
+That’s it! If you went over all three articles in the series, then you covered all the basics of automating tests with Selenium WebDriver in Java. If you want to get into more advanced topics, we recommend learning about [best practices](/automation-patterns-antipatterns/) in automated testing and the [page object](/page-object-pattern-in-test-automation/) design pattern.

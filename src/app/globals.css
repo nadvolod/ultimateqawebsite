@@ -38,3 +38,53 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------- blog posts */
+@layer components {
+  .prose-post {
+    @apply prose prose-lg max-w-none text-uqa-dark;
+    --tw-prose-headings: theme('colors.uqa-ink');
+    --tw-prose-links: theme('colors.uqa-deep-blue');
+    --tw-prose-bold: theme('colors.uqa-dark');
+    --tw-prose-quotes: theme('colors.uqa-dark');
+    --tw-prose-quote-borders: theme('colors.uqa-sky');
+    --tw-prose-code: theme('colors.uqa-deep-blue');
+    --tw-prose-bullets: theme('colors.uqa-sky');
+    --tw-prose-counters: theme('colors.uqa-gray-mid');
+  }
+
+  .prose-post :where(h2, h3, h4) {
+    @apply scroll-mt-24 font-display font-bold tracking-tight;
+  }
+
+  .prose-post :where(a):not(:where(.not-prose *)) {
+    @apply underline decoration-uqa-bright-blue/30 underline-offset-2 transition-colors hover:decoration-uqa-bright-blue;
+  }
+
+  .prose-post blockquote {
+    @apply border-l-4 bg-uqa-gray-bg py-1 font-normal not-italic;
+  }
+  .prose-post blockquote p::before,
+  .prose-post blockquote p::after {
+    content: none;
+  }
+
+  /* inline code */
+  .prose-post :not(pre) > code {
+    @apply rounded bg-uqa-gray-bg px-1.5 py-0.5 font-mono text-[0.85em] font-medium before:content-none after:content-none;
+  }
+
+  /* code blocks from rehype-pretty-code */
+  .prose-post figure[data-rehype-pretty-code-figure] {
+    @apply my-8 overflow-hidden rounded-xl bg-[#0b1730] ring-1 ring-white/5;
+  }
+  .prose-post [data-rehype-pretty-code-title] {
+    @apply border-b border-white/10 px-5 py-2.5 font-mono text-xs text-white/60;
+  }
+  .prose-post figure[data-rehype-pretty-code-figure] pre {
+    @apply m-0 overflow-x-auto rounded-none bg-transparent px-0 py-5 text-[0.85rem] leading-relaxed;
+  }
+  .prose-post pre [data-line] {
+    @apply px-5;
+  }
+}
