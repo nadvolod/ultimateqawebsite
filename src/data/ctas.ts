@@ -2,10 +2,10 @@ import type { Cta, CtaId, OfferId, PostFrontmatter } from '@/types'
 import { getTopic } from '@/data/topics'
 
 /**
- * The beehiiv publication's public URL, e.g. https://ultimateqa.beehiiv.com.
+ * The Substack publication's public URL, e.g. https://ultimateqa.substack.com.
  * Unset until the publication exists; newsletter forms render nothing without it.
  */
-export const NEWSLETTER_URL = process.env.NEXT_PUBLIC_BEEHIIV_URL ?? ''
+export const NEWSLETTER_URL = process.env.NEXT_PUBLIC_SUBSTACK_URL ?? ''
 
 /** Consulting lives on the Legacy Site until /consulting/ is migrated; the path stays the same after Cutover. */
 const CONSULTING_URL = 'https://ultimateqa.com/consulting/'
